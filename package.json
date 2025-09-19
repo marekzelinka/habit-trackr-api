@@ -1,0 +1,28 @@
+{
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"start": "node src/index.ts",
+		"dev": "node --watch src/index.ts",
+		"build": "tsc",
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"test:coverage": "vitest run --coverage",
+		"format": "biome format --write",
+		"lint": "biome lint --write",
+		"check": "biome check --write"
+	},
+	"packageManager": "pnpm@10.16.1",
+	"devDependencies": {
+		"@biomejs/biome": "2.2.4",
+		"@types/express": "^5.0.3",
+		"@types/node": "^24.5.2",
+		"typescript": "^5.9.2",
+		"vitest": "^3.2.4"
+	},
+	"dependencies": {
+		"custom-env": "^2.0.6",
+		"express": "^5.1.0",
+		"zod": "^4.1.9"
+	}
+}

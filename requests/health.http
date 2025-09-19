@@ -1,0 +1,2 @@
+### Test health endpoint
+GET http://localhost:3000/health
