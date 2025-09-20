@@ -1,4 +1,7 @@
 import express from "express";
+import { authRouter } from "./routes/auth.ts";
+import { habitsRouter } from "./routes/habits.ts";
+import { usersRouter } from "./routes/users.ts";
 
 export const app = express();
 
@@ -10,3 +13,8 @@ app.get("/health", (_req, res) => {
 		service: "Habit Trackr API",
 	});
 });
+
+// Routes
+app.use("/api/auth", authRouter);
+app.use("/api/habits", habitsRouter);
+app.use("/api/users", usersRouter);
