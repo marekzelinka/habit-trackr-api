@@ -1,3 +1,4 @@
+// @ts-expect-error
 import { env as loadEnv } from "custom-env";
 import { z } from "zod";
 
