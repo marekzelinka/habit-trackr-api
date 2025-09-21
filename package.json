@@ -12,17 +12,22 @@
 		"lint": "biome lint --write",
 		"check": "biome check --write"
 	},
-	"packageManager": "pnpm@10.16.1",
+	"packageManager": "pnpm@10.17.0",
 	"devDependencies": {
 		"@biomejs/biome": "2.2.4",
+		"@types/cors": "^2.8.19",
 		"@types/express": "^5.0.3",
+		"@types/morgan": "^1.9.10",
 		"@types/node": "^24.5.2",
 		"typescript": "^5.9.2",
 		"vitest": "^3.2.4"
 	},
 	"dependencies": {
+		"cors": "^2.8.5",
 		"custom-env": "^2.0.6",
 		"express": "^5.1.0",
+		"helmet": "^8.1.0",
+		"morgan": "^1.10.1",
 		"zod": "^4.1.9"
 	}
 }
