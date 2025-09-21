@@ -1,6 +1,6 @@
-import { Router } from "express";
+import express from "express";
 
-export const authRouter = Router();
+export const authRouter = express.Router();
 
 authRouter.post("/auth", (_req, res) => {
 	res.json({ message: "auth" });

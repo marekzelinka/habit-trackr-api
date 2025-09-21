@@ -1,6 +1,6 @@
-import { Router } from "express";
+import express from "express";
 
-export const usersRouter = Router();
+export const usersRouter = express.Router();
 
 usersRouter.get("/", (_req, res) => {
 	res.json({ message: "user" });

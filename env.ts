@@ -15,7 +15,7 @@ if (isDevelopment) {
 }
 
 // Define the schema with environment-specific requirements
-const envSchema = z.object({
+const EnvSchema = z.object({
 	// Node environment
 	NODE_ENV: z
 		.enum(["development", "production", "test"])
@@ -49,6 +49,7 @@ const envSchema = z.object({
 			if (typeof val === "string") {
 				return val.split(",").map((origin) => origin.trim());
 			}
+
 			return val;
 		})
 		.default([]),
@@ -60,13 +61,13 @@ const envSchema = z.object({
 });
 
 // Type for the validated environment
-export type Env = z.infer<typeof envSchema>;
+export type Env = z.infer<typeof EnvSchema>;
 
 // Parse and validate environment variables
 export let env: Env;
 
 try {
-	env = envSchema.parse(process.env);
+	env = EnvSchema.parse(process.env);
 } catch (error) {
 	if (error instanceof z.ZodError) {
 		console.error("❌ Invalid environment variables:");
@@ -80,6 +81,7 @@ try {
 
 		process.exit(1);
 	}
+
 	throw error;
 }
 
