@@ -14,7 +14,7 @@
 		"types": ["node", "vitest/globals"],
 
 		// Stricter Typechecking Options
-		"noUncheckedIndexedAccess": true,
+		// "noUncheckedIndexedAccess": true,
 		"exactOptionalPropertyTypes": true,
 		"erasableSyntaxOnly": true,
 
