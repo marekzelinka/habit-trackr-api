@@ -1,14 +1,14 @@
-### Register a new user with valid data
+### Successful register
 POST http://localhost:3000/api/auth/register
 Content-Type: application/json
 
 {
-  "email": "ryan@remix.com",
-  "username": "ryanflorence",
-  "password": "ryaniscool"
+  "email": "kent@remix.com",
+  "username": "kentcdodds",
+  "password": "kentiscool"
 }
 
-### Register a new user with invalid data (email is taken)
+### Failed register - email is taken
 POST http://localhost:3000/api/auth/register
 Content-Type: application/json
 
@@ -17,3 +17,22 @@ Content-Type: application/json
   "username": "ryanflorence",
   "password": "12345678"
 }
+
+### Successful login
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "mzelinka17@gmail.com",
+  "password": "marekiscool"
+}
+
+### Failed login - wrong password
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "mzelinka17@gmail.com",
+  "password": "12345678"
+}
+

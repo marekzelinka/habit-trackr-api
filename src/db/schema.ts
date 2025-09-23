@@ -7,6 +7,7 @@ export const users = table("users", {
 	id: t.uuid("id").primaryKey().defaultRandom(),
 	email: t.varchar("email", { length: 255 }).notNull().unique(),
 	username: t.varchar("username", { length: 50 }).notNull().unique(),
+	// TODO: move password to its own table
 	password: t.varchar("password", { length: 255 }).notNull(),
 	firstName: t.varchar("first_name", { length: 50 }),
 	lastName: t.varchar("last_name", { length: 50 }),
@@ -35,6 +36,7 @@ export const entries = table("entries", {
 		.uuid("habit_id")
 		.references(() => habits.id, { onDelete: "cascade" })
 		.notNull(),
+	// TODO: rename to completionDate
 	completion_date: t.timestamp("completion_date").defaultNow().notNull(),
 	note: t.text("note"),
 	createdAt: t.timestamp("created_at").defaultNow().notNull(),
