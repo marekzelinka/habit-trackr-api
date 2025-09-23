@@ -1,1 +1,19 @@
-POST http://localhost:3000/api/auth/auth
+### Register a new user with valid data
+POST http://localhost:3000/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "ryan@remix.com",
+  "username": "ryanflorence",
+  "password": "ryaniscool"
+}
+
+### Register a new user with invalid data (email is taken)
+POST http://localhost:3000/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "mjackson@gmail.com",
+  "username": "ryanflorence",
+  "password": "12345678"
+}
