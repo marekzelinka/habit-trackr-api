@@ -24,7 +24,6 @@ export const authenticate: WeakRequestHandler = async (req, res, next) => {
 		}
 
 		const payload = await verifyToken(token);
-		console.log("token", token);
 
 		(req as RequestWithUser).user = payload;
 

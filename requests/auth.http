@@ -27,7 +27,7 @@ Content-Type: application/json
   "password": "123456789"
 }
 
-### Failed login - wrong password
+### Successful password update
 POST http://localhost:3000/api/auth/login
 Content-Type: application/json
 

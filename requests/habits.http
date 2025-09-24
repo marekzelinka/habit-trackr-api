@@ -1,1 +1,15 @@
+### Successful retrieval of user habits - valid token
 GET http://localhost:3000/api/habits
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjI1MzMwZTM3LWE0YWQtNDM3MS1hNmZhLWU4OTViYWZhOTBmZCIsImVtYWlsIjoibXplbGlua2ExN0BnbWFpbC5jb20iLCJ1c2VybmFtZSI6Im16ZWxpbmthMTciLCJpYXQiOjE3NTg3Mzc5MzMsImV4cCI6MTc1OTM0MjczM30.x1ANCyDeR-tVrMzKqHkIIXs1HXK4XQHlf4u1lowjPzk
+
+### Successful habit create - valid data
+POST http://localhost:3000/api/habits
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjI1MzMwZTM3LWE0YWQtNDM3MS1hNmZhLWU4OTViYWZhOTBmZCIsImVtYWlsIjoibXplbGlua2ExN0BnbWFpbC5jb20iLCJ1c2VybmFtZSI6Im16ZWxpbmthMTciLCJpYXQiOjE3NTg3Mzc5MzMsImV4cCI6MTc1OTM0MjczM30.x1ANCyDeR-tVrMzKqHkIIXs1HXK4XQHlf4u1lowjPzk
+
+{
+ 	"name": "Exercise",
+	"description": "Daily workout routine",
+	"frequency": "daily",
+	"targetCount": 1
+}
