@@ -1,11 +1,19 @@
-import type { Request, RequestHandler } from "express";
+import type { Request } from "express";
+import type { WeakRequestHandler } from "express-zod-safe";
 import { type JWTPayload, verifyToken } from "../utils/jwt.ts";
 
 export interface RequestWithUser extends Request {
 	user?: JWTPayload;
 }
 
-export const authenticate: RequestHandler = async (req, res, next) => {
+// biome-ignore lint/suspicious/noExplicitAny: We don't really care
+export function getUserIdFromRequest(req: Request<any, any, any, any>) {
+	const userId = (req as RequestWithUser).user?.id as string;
+
+	return userId;
+}
+
+export const authenticate: WeakRequestHandler = async (req, res, next) => {
 	try {
 		const token = req.headers.authorization?.split(" ")[1];
 
