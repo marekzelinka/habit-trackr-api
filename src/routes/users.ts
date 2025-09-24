@@ -5,6 +5,7 @@ import z from "zod";
 import { db } from "../db/connection.ts";
 import { UpdateUserSchema, users } from "../db/schema.ts";
 import { authenticate, getUserIdFromRequest } from "../middleware/auth.ts";
+import { comparePassword, hashPassword } from "../utils/password.ts";
 
 export const usersRouter = express.Router();
 
@@ -29,6 +30,7 @@ usersRouter.get("/profile", async (req, res) => {
 
 		if (!user) {
 			res.status(404).json({ success: false, error: "User not found" });
+
 			return;
 		}
 
@@ -90,6 +92,70 @@ usersRouter.put(
 			res
 				.status(500)
 				.json({ success: false, error: "Failed to update profile" });
+		}
+	},
+);
+
+const UpdatePasswordSchema = z.object({
+	currentPassword: z.string().min(1, "Current password is required"),
+	newPassword: z.string().min(8, "New password must be at least 8 characters"),
+});
+
+usersRouter.put(
+	"/password",
+	validate({ body: UpdatePasswordSchema }),
+	async (req, res) => {
+		const userId = getUserIdFromRequest(req);
+
+		const { currentPassword, newPassword } = req.body;
+
+		try {
+			// Get logged-in user with current password
+			const [loggedInUser] = await db
+				.select({
+					password: users.password,
+				})
+				.from(users)
+				.where(eq(users.id, userId));
+
+			if (!loggedInUser) {
+				res.status(404).json({ success: false, error: "User not found" });
+
+				return;
+			}
+
+			// Verify current password
+			const isValidPassword = await comparePassword(
+				currentPassword,
+				loggedInUser.password,
+			);
+
+			if (!isValidPassword) {
+				res
+					.status(400)
+					.json({ success: false, error: "Current password is incorrect" });
+
+				return;
+			}
+
+			const hashedPassword = await hashPassword(newPassword);
+
+			// Update current password with new password (hashed)
+			await db
+				.update(users)
+				.set({ password: hashedPassword, updatedAt: new Date() })
+				.where(eq(users.id, userId));
+
+			res.json({
+				success: true,
+				message: "Password update successful",
+			});
+		} catch (error) {
+			console.error("Update password error:", error);
+
+			res
+				.status(500)
+				.json({ success: false, error: "Failed to update password" });
 		}
 	},
 );

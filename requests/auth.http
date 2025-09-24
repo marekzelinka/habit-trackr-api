@@ -24,7 +24,7 @@ Content-Type: application/json
 
 {
   "email": "mzelinka17@gmail.com",
-  "password": "marekiscool"
+  "password": "123456789"
 }
 
 ### Failed login - wrong password

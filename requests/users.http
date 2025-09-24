@@ -10,3 +10,13 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjI1MzMwZTM3LWE0YWQtNDM3MS1hN
 {
   "username": "mzelinka17"
 }
+
+### Successful password update - valid token
+PUT http://localhost:3000/api/users/password
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjI1MzMwZTM3LWE0YWQtNDM3MS1hNmZhLWU4OTViYWZhOTBmZCIsImVtYWlsIjoibXplbGlua2ExN0BnbWFpbC5jb20iLCJ1c2VybmFtZSI6Ik1hcmVrIFplbGlua2EiLCJpYXQiOjE3NTg3MjY2NDQsImV4cCI6MTc1OTMzMTQ0NH0.3bReiiR_iRnkSz_BW9W3sezntngH7lmzAkn1D0P5IUM
+
+{
+  "currentPassword": "marekiscool",
+  "newPassword": "123456789"
+}
