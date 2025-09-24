@@ -1,7 +1,11 @@
 import { relations } from "drizzle-orm";
 import * as t from "drizzle-orm/pg-core";
 import { pgTable as table } from "drizzle-orm/pg-core";
-import { createInsertSchema, createSelectSchema } from "drizzle-zod";
+import {
+	createInsertSchema,
+	createSelectSchema,
+	createUpdateSchema,
+} from "drizzle-zod";
 
 export const users = table("users", {
 	id: t.uuid("id").primaryKey().defaultRandom(),
@@ -100,18 +104,23 @@ export const habitTagsRelations = relations(habitTags, ({ one }) => ({
 
 export const InsertUserSchema = createInsertSchema(users);
 export const SelectUserSchema = createSelectSchema(users);
+export const UpdateUserSchema = createUpdateSchema(users);
 
 export const InsertHabitSchema = createInsertSchema(habits);
 export const SelectHabitSchema = createSelectSchema(habits);
+export const UpdateHabitSchema = createUpdateSchema(habits);
 
 export const InsertEntrySchema = createInsertSchema(entries);
 export const SelectEntrySchema = createSelectSchema(entries);
+export const UpdateEntrySchema = createUpdateSchema(entries);
 
 export const InsertTagSchema = createInsertSchema(tags);
 export const SelectTagSchema = createSelectSchema(tags);
+export const UpdateTagSchema = createUpdateSchema(tags);
 
 export const InsertHabitTagSchema = createInsertSchema(habitTags);
 export const SelectHabitTagSchema = createSelectSchema(habitTags);
+export const UpdateHabitTagSchema = createUpdateSchema(habitTags);
 
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
