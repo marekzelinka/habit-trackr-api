@@ -5,7 +5,6 @@ import { authenticate } from "../middleware/auth.ts";
 export const habitsRouter = express.Router();
 
 const auth = authenticate as WeakRequestHandler;
-
 habitsRouter.use(auth);
 
 habitsRouter.get("/", (_req, res) => {

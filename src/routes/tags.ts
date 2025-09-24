@@ -5,7 +5,6 @@ import { authenticate } from "../middleware/auth.ts";
 export const tagsRouter = express.Router();
 
 const auth = authenticate as WeakRequestHandler;
-
 tagsRouter.use(auth);
 
 tagsRouter.get("/", (_req, res) => {
