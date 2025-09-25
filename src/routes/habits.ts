@@ -10,42 +10,6 @@ export const habitsRouter = express.Router();
 
 habitsRouter.use(authenticate);
 
-habitsRouter.get("/", async (req, res) => {
-	const userId = getUserIdFromRequest(req);
-
-	try {
-		// Query user habits with their tags
-		const habitsWithTagsData = await db.query.habits.findMany({
-			where: eq(habits.userId, userId),
-			with: {
-				habitTags: {
-					with: {
-						tag: true,
-					},
-				},
-			},
-			orderBy: [desc(habits.createdAt)],
-		});
-
-		// Include habit tags directly
-		const habitsWithTags = habitsWithTagsData.map((habit) => ({
-			...habit,
-			tags: habit.habitTags.map((habitTag) => habitTag.tag),
-			habitTags: undefined,
-		}));
-
-		res.json({
-			success: true,
-			message: "Habits retrived",
-			data: { habits: habitsWithTags },
-		});
-	} catch (error) {
-		console.error("Get habbits error:", error);
-
-		res.status(500).json({ success: false, error: "Failed to fetch habits" });
-	}
-});
-
 const CreateHabitSchema = InsertHabitSchema.extend({
 	name: z.string().min(1, "Habit name is required").max(100, "Name too long"),
 	description: z.string().optional(),
@@ -80,7 +44,7 @@ habitsRouter.post(
 				const [newHabit] = await tx
 					.insert(habits)
 					.values({ userId, name, description, frequency, targetCount })
-					.returning({ id: habits.id });
+					.returning();
 
 				// If tag ids are provided, create the relation
 				if (tagIds?.length) {
@@ -107,3 +71,39 @@ habitsRouter.post(
 		}
 	},
 );
+
+habitsRouter.get("/", async (req, res) => {
+	const userId = getUserIdFromRequest(req);
+
+	try {
+		// Query user habits with their tags
+		const queryResult = await db.query.habits.findMany({
+			where: eq(habits.userId, userId),
+			with: {
+				habitTags: {
+					with: {
+						tag: true,
+					},
+				},
+			},
+			orderBy: [desc(habits.createdAt)],
+		});
+
+		// Include habit tags directly
+		const habitsWithTags = queryResult.map((habit) => ({
+			...habit,
+			tags: habit.habitTags.map((habitTag) => habitTag.tag),
+			habitTags: undefined,
+		}));
+
+		res.json({
+			success: true,
+			message: "Habits retrived",
+			data: { habits: habitsWithTags },
+		});
+	} catch (error) {
+		console.error("Get habbits error:", error);
+
+		res.status(500).json({ success: false, error: "Failed to fetch habits" });
+	}
+});

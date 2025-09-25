@@ -1,15 +1,16 @@
-### Successful retrieval of user habits - valid token
+### Get habits
 GET http://localhost:3000/api/habits
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjI1MzMwZTM3LWE0YWQtNDM3MS1hNmZhLWU4OTViYWZhOTBmZCIsImVtYWlsIjoibXplbGlua2ExN0BnbWFpbC5jb20iLCJ1c2VybmFtZSI6Im16ZWxpbmthMTciLCJpYXQiOjE3NTg3Mzc5MzMsImV4cCI6MTc1OTM0MjczM30.x1ANCyDeR-tVrMzKqHkIIXs1HXK4XQHlf4u1lowjPzk
 
-### Successful habit create - valid data
+### Create habit
 POST http://localhost:3000/api/habits
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjI1MzMwZTM3LWE0YWQtNDM3MS1hNmZhLWU4OTViYWZhOTBmZCIsImVtYWlsIjoibXplbGlua2ExN0BnbWFpbC5jb20iLCJ1c2VybmFtZSI6Im16ZWxpbmthMTciLCJpYXQiOjE3NTg3Mzc5MzMsImV4cCI6MTc1OTM0MjczM30.x1ANCyDeR-tVrMzKqHkIIXs1HXK4XQHlf4u1lowjPzk
 
 {
- 	"name": "Exercise",
-	"description": "Daily workout routine",
+ 	"name": "Thinking hard",
+	"description": "This about life",
 	"frequency": "daily",
-	"targetCount": 1
+	"targetCount": 1,
+	"tagIds": ["8f630fbf-05ce-475c-946a-86a4fd634526", "68e2751f-b8da-4481-8fbf-27c059681f77", "b95887b2-a2a6-47f2-9737-f0e9a2f3e84c"]
 }

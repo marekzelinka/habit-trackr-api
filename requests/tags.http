@@ -1,1 +1,12 @@
+### Create a new tag
+POST http://localhost:3000/api/tags
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjI1MzMwZTM3LWE0YWQtNDM3MS1hNmZhLWU4OTViYWZhOTBmZCIsImVtYWlsIjoibXplbGlua2ExN0BnbWFpbC5jb20iLCJ1c2VybmFtZSI6Im16ZWxpbmthMTciLCJpYXQiOjE3NTg4MTA0MDAsImV4cCI6MTc1OTQxNTIwMH0.CYaCI_cyRmnnGX_hav9JBd6cfNTKBYvcEupJvQQ1778
+
+{
+  "name": "For fun"
+}
+
+### Get tags
 GET http://localhost:3000/api/tags
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjI1MzMwZTM3LWE0YWQtNDM3MS1hNmZhLWU4OTViYWZhOTBmZCIsImVtYWlsIjoibXplbGlua2ExN0BnbWFpbC5jb20iLCJ1c2VybmFtZSI6Im16ZWxpbmthMTciLCJpYXQiOjE3NTg4MTA0MDAsImV4cCI6MTc1OTQxNTIwMH0.CYaCI_cyRmnnGX_hav9JBd6cfNTKBYvcEupJvQQ1778

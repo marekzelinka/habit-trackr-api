@@ -1,4 +1,4 @@
-### Successful register
+### Create user
 POST http://localhost:3000/api/auth/register
 Content-Type: application/json
 
@@ -8,17 +8,7 @@ Content-Type: application/json
   "password": "kentiscool"
 }
 
-### Failed register - email is taken
-POST http://localhost:3000/api/auth/register
-Content-Type: application/json
-
-{
-  "email": "mjackson@gmail.com",
-  "username": "ryanflorence",
-  "password": "12345678"
-}
-
-### Successful login
+### Login with password
 POST http://localhost:3000/api/auth/login
 Content-Type: application/json
 
@@ -27,7 +17,7 @@ Content-Type: application/json
   "password": "123456789"
 }
 
-### Successful password update
+### Update password
 POST http://localhost:3000/api/auth/login
 Content-Type: application/json
 
