@@ -1,4 +1,4 @@
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import express from "express";
 import validate from "express-zod-safe";
 import z from "zod";
@@ -47,7 +47,7 @@ habitsRouter.post(
 					.returning();
 
 				// If tag ids are provided, create the relation
-				if (tagIds?.length) {
+				if (tagIds && tagIds.length !== 0) {
 					await tx.insert(habitTags).values(
 						tagIds.map((tagId) => ({
 							habitId: newHabit.id,
@@ -72,6 +72,68 @@ habitsRouter.post(
 	},
 );
 
+const HabitIdSchema = z.object({
+	habitId: z.uuid("Invalid habit ID format"),
+});
+
+const UpdateHabitTagsSchema = z.object({
+	tagIds: z.array(z.uuid()).min(1, "At least one tag ID is required"),
+});
+
+habitsRouter.post(
+	"/:habitId/tags",
+	validate({ params: HabitIdSchema, body: UpdateHabitTagsSchema }),
+	async (req, res) => {
+		const userId = getUserIdFromRequest(req);
+
+		const { habitId } = req.params;
+		const { tagIds } = req.body;
+
+		try {
+			// Verify the habit belongs to user
+			const [habit] = await db
+				.select({ id: habits.id })
+				.from(habits)
+				.where(and(eq(habits.id, habitId), eq(habits.userId, userId)));
+
+			if (!habit) {
+				res.status(404).json({ success: false, error: "Habit not found" });
+
+				return;
+			}
+
+			// Get existing tags
+			const existingHabitTags = await db
+				.select({ tagId: habitTags.tagId })
+				.from(habitTags)
+				.where(eq(habitTags.habitId, habitId));
+
+			const existingHabitTagIds = existingHabitTags.map(
+				(habitTag) => habitTag.tagId,
+			);
+			// Filter out existing tag ids, as we don't want duplicates
+			const newHabitTagIds = tagIds.filter(
+				(tagId) => !existingHabitTagIds.includes(tagId),
+			);
+
+			if (newHabitTagIds.length !== 0) {
+				await db.insert(habitTags).values(
+					newHabitTagIds.map((tagId) => ({
+						habitId,
+						tagId,
+					})),
+				);
+			}
+
+			res.status(201).json({ success: true, message: "Habit tags added" });
+		} catch (error) {
+			console.error("Add tag ids to habit error:", error);
+
+			res.json({ success: false, error: "Failed to add tag ids to habit" });
+		}
+	},
+);
+
 habitsRouter.get("/", async (req, res) => {
 	const userId = getUserIdFromRequest(req);
 
@@ -81,6 +143,7 @@ habitsRouter.get("/", async (req, res) => {
 			where: eq(habits.userId, userId),
 			with: {
 				habitTags: {
+					columns: {},
 					with: {
 						tag: true,
 					},

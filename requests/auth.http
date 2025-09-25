@@ -16,13 +16,3 @@ Content-Type: application/json
   "email": "mzelinka17@gmail.com",
   "password": "123456789"
 }
-
-### Update password
-POST http://localhost:3000/api/auth/login
-Content-Type: application/json
-
-{
-  "email": "mzelinka17@gmail.com",
-  "password": "12345678"
-}
-

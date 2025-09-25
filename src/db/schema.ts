@@ -27,8 +27,10 @@ export const habits = table("habits", {
 		.notNull(),
 	name: t.varchar("name", { length: 100 }).notNull(),
 	description: t.text("description"),
-	frequency: t.varchar("frequency", { length: 20 }).notNull(), // daily, weekly, monthly
-	targetCount: t.integer("target_count").default(1), // how many times per frequency period
+	// Can be daily, weekly, monthly
+	frequency: t.varchar("frequency", { length: 20 }).notNull(),
+	// How many times per frequency period
+	targetCount: t.integer("target_count").default(1),
 	isActive: t.boolean("is_active").default(true).notNull(),
 	createdAt: t.timestamp("created_at").defaultNow().notNull(),
 	updatedAt: t.timestamp("updated_at").defaultNow().notNull(),
