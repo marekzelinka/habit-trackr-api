@@ -3,12 +3,22 @@ import express from "express";
 import validate from "express-zod-safe";
 import z from "zod";
 import { db } from "../db/connection.ts";
-import { habits, habitTags, InsertHabitSchema } from "../db/schema.ts";
+import {
+	entries,
+	habits,
+	habitTags,
+	InsertEntrySchema,
+	InsertHabitSchema,
+} from "../db/schema.ts";
 import { authenticate, getUserIdFromRequest } from "../middleware/auth.ts";
 
 export const habitsRouter = express.Router();
 
 habitsRouter.use(authenticate);
+
+const HabitIdSchema = z.object({
+	habitId: z.uuid("Invalid habit ID format"),
+});
 
 const CreateHabitSchema = InsertHabitSchema.extend({
 	name: z.string().min(1, "Habit name is required").max(100, "Name too long"),
@@ -72,10 +82,6 @@ habitsRouter.post(
 	},
 );
 
-const HabitIdSchema = z.object({
-	habitId: z.uuid("Invalid habit ID format"),
-});
-
 const UpdateHabitTagsSchema = z.object({
 	tagIds: z.array(z.uuid()).min(1, "At least one tag ID is required"),
 });
@@ -130,6 +136,65 @@ habitsRouter.post(
 			console.error("Add tag ids to habit error:", error);
 
 			res.json({ success: false, error: "Failed to add tag ids to habit" });
+		}
+	},
+);
+
+const CreateHabitCompletionSchema = InsertEntrySchema.pick({ note: true });
+
+habitsRouter.post(
+	"/:habitId/complete",
+	validate({ params: HabitIdSchema, body: CreateHabitCompletionSchema }),
+	async function logHabitCompletion(req, res) {
+		const userId = getUserIdFromRequest(req);
+
+		const { habitId } = req.params;
+		const { note } = req.body;
+
+		try {
+			// Verify habit belongs to current user
+			const [habit] = await db
+				.select({ isActive: habits.isActive })
+				.from(habits)
+				.where(and(eq(habits.id, habitId), eq(habits.userId, userId)));
+
+			if (!habit) {
+				res.status(404).json({ success: false, error: "Habit not found" });
+
+				return;
+			} else if (!habit.isActive) {
+				res
+					.status(400)
+					.json({
+						success: false,
+						error: "Cannot complete an invactive habit",
+					});
+
+				return;
+			}
+
+			// Create a new completion entry
+			const [newEntry] = await db
+				.insert(entries)
+				.values({ habitId, completion_date: new Date(), note })
+				.returning({
+					id: entries.id,
+					completion_date: entries.completion_date,
+					note: entries.note,
+					createdAt: entries.createdAt,
+				});
+
+			res.status(201).json({
+				success: true,
+				message: "Habit completed successfully",
+				data: { entry: newEntry },
+			});
+		} catch (error) {
+			console.error("Complete habbit error:", error);
+
+			res
+				.status(500)
+				.json({ success: false, error: "Failed to complete habit" });
 		}
 	},
 );
