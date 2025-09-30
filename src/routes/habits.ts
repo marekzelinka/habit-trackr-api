@@ -294,6 +294,58 @@ habitsRouter.get(
 	},
 );
 
+habitsRouter.get(
+	"/tags/:tagId",
+	validate({
+		params: z.object({
+			tagId: z.uuid("Invalid tag ID format"),
+		}),
+	}),
+	async (req, res) => {
+		const userId = getUserIdFromRequest(req);
+
+		const { tagId } = req.params;
+
+		try {
+			// Get all habits that have this tag and belong to the user
+			const habitsWithTagQuery = await db.query.habitTags.findMany({
+				where: eq(habitTags.tagId, tagId),
+				with: {
+					habit: {
+						with: {
+							habitTags: {
+								with: {
+									tag: true,
+								},
+							},
+						},
+					},
+				},
+			});
+
+			const habitsWithTag = habitsWithTagQuery
+				.filter((habitWithTag) => habitWithTag.habit.userId === userId)
+				.map((habitWithTag) => ({
+					...habitWithTag.habit,
+					tags: habitWithTag.habit.habitTags.map((habitTag) => habitTag.tag),
+					habitTags: undefined,
+				}));
+
+			res.json({
+				success: true,
+				message: "Habit with tag retrived",
+				data: { habits: habitsWithTag },
+			});
+		} catch (error) {
+			console.error("Get habits by tag error:", error);
+
+			res
+				.status(500)
+				.json({ success: false, error: "Failed to fetch habits by tag" });
+		}
+	},
+);
+
 habitsRouter.put(
 	"/:habitId",
 	validate({
