@@ -1,9 +1,9 @@
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import express from "express";
 import validate from "express-zod-safe";
 import z from "zod";
 import { db } from "../db/connection.ts";
-import { InsertTagSchema, tags } from "../db/schema.ts";
+import { habitTags, InsertTagSchema, tags } from "../db/schema.ts";
 import { authenticate } from "../middleware/auth.ts";
 
 export const tagsRouter = express.Router();
@@ -65,5 +65,32 @@ tagsRouter.get("/", async (_req, res) => {
 		console.error("Get tags error:", error);
 
 		res.status(500).json({ success: false, error: "Failed to fetch tags" });
+	}
+});
+
+tagsRouter.get("/popular", async (_req, res) => {
+	try {
+		const popularTags = await db
+			.select({
+				id: tags.id,
+				name: tags.name,
+				color: tags.color,
+				createdAt: tags.createdAt,
+				updatedAt: tags.updatedAt,
+				usageCount: sql<number>`count(${habitTags.id})`,
+			})
+			.from(tags)
+			.leftJoin(habitTags, eq(habitTags.tagId, tags.id))
+			.groupBy(tags.id)
+			.orderBy(sql`count(${habitTags.id}) DESC`)
+			.limit(10);
+
+		res.json({ success: true, data: { tags: popularTags } });
+	} catch (error) {
+		console.error("Get popular tags error:", error);
+
+		res
+			.status(500)
+			.json({ success: false, error: "Failed to fetch popular tags" });
 	}
 });
