@@ -42,20 +42,20 @@ usersRouter.get("/profile", async (req, res) => {
 	}
 });
 
-const UpdateProfileSchema = UpdateUserSchema.extend({
-	email: z.email("Invalid email format").optional(),
-	username: z
-		.string()
-		.min(3, "Username must be at least 3 characters")
-		.max(50, "Username too long")
-		.optional(),
-	firstName: z.string().max(50, "First name too long").optional(),
-	lastName: z.string().max(50, "Last name too long").optional(),
-});
-
 usersRouter.put(
 	"/profile",
-	validate({ body: UpdateProfileSchema }),
+	validate({
+		body: UpdateUserSchema.extend({
+			email: z.email("Invalid email format").optional(),
+			username: z
+				.string()
+				.min(3, "Username must be at least 3 characters")
+				.max(50, "Username too long")
+				.optional(),
+			firstName: z.string().max(50, "First name too long").optional(),
+			lastName: z.string().max(50, "Last name too long").optional(),
+		}),
+	}),
 	async (req, res) => {
 		const userId = getUserIdFromRequest(req);
 

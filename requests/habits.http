@@ -38,3 +38,12 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjI1MzMwZTM3LWE0YWQtNDM3MS1hN
 ### Get habit by id
 GET http://localhost:3000/api/habits/e9ed6154-fe2b-4e6a-af76-91726c5d71f4
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjI1MzMwZTM3LWE0YWQtNDM3MS1hNmZhLWU4OTViYWZhOTBmZCIsImVtYWlsIjoibXplbGlua2ExN0BnbWFpbC5jb20iLCJ1c2VybmFtZSI6Im16ZWxpbmthMTciLCJpYXQiOjE3NTg3Mzc5MzMsImV4cCI6MTc1OTM0MjczM30.x1ANCyDeR-tVrMzKqHkIIXs1HXK4XQHlf4u1lowjPzk
+
+### Update habit
+PUT http://localhost:3000/api/habits/e9ed6154-fe2b-4e6a-af76-91726c5d71f4
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjI1MzMwZTM3LWE0YWQtNDM3MS1hNmZhLWU4OTViYWZhOTBmZCIsImVtYWlsIjoibXplbGlua2ExN0BnbWFpbC5jb20iLCJ1c2VybmFtZSI6Im16ZWxpbmthMTciLCJpYXQiOjE3NTg3Mzc5MzMsImV4cCI6MTc1OTM0MjczM30.x1ANCyDeR-tVrMzKqHkIIXs1HXK4XQHlf4u1lowjPzk
+
+{
+	"name": "Thinking really hard this time around"
+}

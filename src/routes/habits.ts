@@ -9,6 +9,7 @@ import {
 	habitTags,
 	InsertEntrySchema,
 	InsertHabitSchema,
+	UpdateHabitSchema,
 } from "../db/schema.ts";
 import { authenticate, getUserIdFromRequest } from "../middleware/auth.ts";
 
@@ -16,30 +17,27 @@ export const habitsRouter = express.Router();
 
 habitsRouter.use(authenticate);
 
-const HabitIdSchema = z.object({
-	habitId: z.uuid("Invalid habit ID format"),
-});
-
-const CreateHabitSchema = InsertHabitSchema.extend({
-	name: z.string().min(1, "Habit name is required").max(100, "Name too long"),
-	description: z.string().optional(),
-	frequency: z.enum(["daily", "weekly", "monthly"], {
-		error: "Frequency must be daily, weekly, or monthly",
-	}),
-	targetCount: z.number().int().positive().optional().default(1),
-	tagIds: z.array(z.uuid()).optional(),
-}).pick({
-	name: true,
-	description: true,
-	frequency: true,
-	targetCount: true,
-	tagIds: true,
-});
-
 habitsRouter.post(
 	"/",
 	validate({
-		body: CreateHabitSchema,
+		body: InsertHabitSchema.extend({
+			name: z
+				.string()
+				.min(1, "Habit name is required")
+				.max(100, "Name too long"),
+			description: z.string().optional(),
+			frequency: z.enum(["daily", "weekly", "monthly"], {
+				error: "Frequency must be daily, weekly, or monthly",
+			}),
+			targetCount: z.number().int().positive().optional().default(1),
+			tagIds: z.array(z.uuid()).optional(),
+		}).pick({
+			name: true,
+			description: true,
+			frequency: true,
+			targetCount: true,
+			tagIds: true,
+		}),
 	}),
 	async (req, res) => {
 		const userId = getUserIdFromRequest(req);
@@ -82,13 +80,16 @@ habitsRouter.post(
 	},
 );
 
-const UpdateHabitTagsSchema = z.object({
-	tagIds: z.array(z.uuid()).min(1, "At least one tag ID is required"),
-});
-
 habitsRouter.post(
 	"/:habitId/tags",
-	validate({ params: HabitIdSchema, body: UpdateHabitTagsSchema }),
+	validate({
+		params: z.object({
+			habitId: z.uuid("Invalid habit ID format"),
+		}),
+		body: z.object({
+			tagIds: z.array(z.uuid()).min(1, "At least one tag ID is required"),
+		}),
+	}),
 	// Add tags to habit
 	async (req, res) => {
 		const userId = getUserIdFromRequest(req);
@@ -141,11 +142,14 @@ habitsRouter.post(
 	},
 );
 
-const CreateHabitCompletionSchema = InsertEntrySchema.pick({ note: true });
-
 habitsRouter.post(
 	"/:habitId/complete",
-	validate({ params: HabitIdSchema, body: CreateHabitCompletionSchema }),
+	validate({
+		params: z.object({
+			habitId: z.uuid("Invalid habit ID format"),
+		}),
+		body: InsertEntrySchema.pick({ note: true }),
+	}),
 	// Log habit completion
 	async (req, res) => {
 		const userId = getUserIdFromRequest(req);
@@ -238,7 +242,11 @@ habitsRouter.get("/", async (req, res) => {
 
 habitsRouter.get(
 	"/:habitId",
-	validate({ params: HabitIdSchema }),
+	validate({
+		params: z.object({
+			habitId: z.uuid("Invalid habit ID format"),
+		}),
+	}),
 	async (req, res) => {
 		const userId = getUserIdFromRequest(req);
 
@@ -282,6 +290,83 @@ habitsRouter.get(
 			console.error("Get habit error:", error);
 
 			res.status(500).json({ success: false, error: "Failed to fetch habit" });
+		}
+	},
+);
+
+habitsRouter.put(
+	"/:habitId",
+	validate({
+		params: z.object({
+			habitId: z.uuid("Invalid habit ID format"),
+		}),
+		body: UpdateHabitSchema.extend({
+			name: z
+				.string()
+				.min(1, "Habit name is required")
+				.max(100, "Name too long")
+				.optional(),
+			description: z.string().optional(),
+			frequency: z.enum(["daily", "weekly", "monthly"]).optional(),
+			targetCount: z.number().int().positive().optional(),
+			tagIds: z.array(z.uuid()).optional(),
+		}).pick({
+			name: true,
+			description: true,
+			frequency: true,
+			targetCount: true,
+			isActive: true,
+			tagIds: true,
+		}),
+	}),
+	// Log habit completion
+	async (req, res) => {
+		const userId = getUserIdFromRequest(req);
+
+		const { habitId } = req.params;
+		const { tagIds, ...updates } = req.body;
+
+		try {
+			const updatedHabit = await db.transaction(async (tx) => {
+				const [updatedHabit] = await tx
+					.update(habits)
+					.set({ ...updates, updatedAt: new Date() })
+					.where(and(eq(habits.id, habitId), eq(habits.userId, userId)))
+					.returning();
+
+				if (!updatedHabit) {
+					res.status(404).json({ error: "Habit not found" });
+
+					tx.rollback();
+				}
+
+				// If tags are provided, update the associations
+				if (tagIds) {
+					// Remove existing tags
+					await tx.delete(habitTags).where(eq(habitTags.habitId, habitId));
+
+					// Add new tags
+					if (tagIds.length !== 0) {
+						await tx.insert(habitTags).values(
+							tagIds.map((tagId) => ({
+								habitId,
+								tagId,
+							})),
+						);
+					}
+				}
+				return updatedHabit;
+			});
+
+			res.json({
+				success: true,
+				message: "Habit updated",
+				data: { habit: updatedHabit },
+			});
+		} catch (error) {
+			console.error("Update habit error:", error);
+
+			res.status(500).json({ success: false, error: "Failed to update habit" });
 		}
 	},
 );
