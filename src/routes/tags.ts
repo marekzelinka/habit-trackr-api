@@ -3,7 +3,12 @@ import express from "express";
 import validate from "express-zod-safe";
 import z from "zod";
 import { db } from "../db/connection.ts";
-import { habits, habitTags, InsertTagSchema, tags } from "../db/schema.ts";
+import {
+	habitTags,
+	InsertTagSchema,
+	tags,
+	UpdateTagSchema,
+} from "../db/schema.ts";
 import { authenticate } from "../middleware/auth.ts";
 
 export const tagsRouter = express.Router();
@@ -138,6 +143,72 @@ tagsRouter.get(
 			console.error("Get tag error:", error);
 
 			res.status(500).json({ success: false, error: "Failed to fetch tag" });
+		}
+	},
+);
+
+tagsRouter.put(
+	"/:tagId",
+	validate({
+		params: z.object({
+			tagId: z.uuid("Invalid habit ID format"),
+		}),
+		body: UpdateTagSchema.extend({
+			name: z.string().min(1).max(50).optional(),
+			color: z
+				.string()
+				.regex(/^#[0-9A-Fa-f]{6}$/, "Color must be a valid hex color")
+				.optional(),
+		}).pick({
+			name: true,
+			color: true,
+		}),
+	}),
+	async (req, res) => {
+		const { tagId } = req.params;
+		const { name, color } = req.body;
+
+		try {
+			// If updating name, check if new name already exists
+			if (name) {
+				const existingTag = await db.query.tags.findFirst({
+					where: eq(tags.name, name),
+				});
+
+				if (existingTag && existingTag.id !== tagId) {
+					res.status(409).json({
+						success: false,
+						error: "Tag with this name already exists",
+					});
+
+					return;
+				}
+			}
+
+			const [updatedTag] = await db
+				.update(tags)
+				.set({
+					name,
+					color,
+				})
+				.where(eq(tags.id, tagId))
+				.returning();
+
+			if (!updatedTag) {
+				res.status(409).json({ success: false, error: "Tag not found" });
+
+				return;
+			}
+
+			res.json({
+				success: true,
+				message: "Tag updated",
+				data: { tag: updatedTag },
+			});
+		} catch (error) {
+			console.error("Update tag error:", error);
+
+			res.status(500).json({ success: false, error: "Failed to update tag" });
 		}
 	},
 );
