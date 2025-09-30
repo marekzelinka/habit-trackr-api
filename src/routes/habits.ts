@@ -90,7 +90,6 @@ habitsRouter.post(
 			tagIds: z.array(z.uuid()).min(1, "At least one tag ID is required"),
 		}),
 	}),
-	// Add tags to habit
 	async (req, res) => {
 		const userId = getUserIdFromRequest(req);
 
@@ -150,7 +149,6 @@ habitsRouter.post(
 		}),
 		body: InsertEntrySchema.pick({ note: true }),
 	}),
-	// Log habit completion
 	async (req, res) => {
 		const userId = getUserIdFromRequest(req);
 

@@ -9,7 +9,7 @@ import {
 	tags,
 	UpdateTagSchema,
 } from "../db/schema.ts";
-import { authenticate } from "../middleware/auth.ts";
+import { authenticate, getUserIdFromRequest } from "../middleware/auth.ts";
 
 export const tagsRouter = express.Router();
 
@@ -147,6 +147,72 @@ tagsRouter.get(
 	},
 );
 
+tagsRouter.get(
+	"/:tagId/habits",
+	validate({ params: z.object({ tagId: z.uuid("Invalid habit ID format") }) }),
+	async (req, res) => {
+		const userId = getUserIdFromRequest(req);
+
+		const { tagId } = req.params;
+
+		try {
+			// Get all habits that have this tag
+			const tagWithHabitsQuery = await db.query.tags.findFirst({
+				where: eq(tags.id, tagId),
+				with: {
+					habitTags: {
+						with: {
+							habit: {
+								with: {
+									habitTags: {
+										with: {
+											tag: true,
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			});
+
+			if (!tagWithHabitsQuery) {
+				res.status(404).json({ success: false, error: "Tag not found" });
+
+				return;
+			}
+
+			// Filter habits by user and transform
+			const tagWithHabits = tagWithHabitsQuery.habitTags
+				.filter((habitTag) => habitTag.habit.userId === userId)
+				.map((habitTag) => ({
+					...habitTag.habit,
+					tags: habitTag.habit.habitTags.map((habitTag) => habitTag.tag),
+					habitTags: undefined,
+					user: undefined,
+				}));
+
+			res.json({
+				success: true,
+				data: {
+					tag: {
+						id: tagWithHabitsQuery.id,
+						name: tagWithHabitsQuery.name,
+						color: tagWithHabitsQuery.color,
+					},
+					habits: tagWithHabits,
+				},
+			});
+		} catch (error) {
+			console.error("Get tag habits error:", error);
+
+			res
+				.status(500)
+				.json({ success: false, error: "Failed to fetch habits for tag" });
+		}
+	},
+);
+
 tagsRouter.put(
 	"/:tagId",
 	validate({
@@ -232,12 +298,10 @@ tagsRouter.delete(
 				.limit(1);
 
 			if (tagUsage.length !== 0) {
-				res
-					.status(409)
-					.json({
-						success: false,
-						error: "Tag is in use, remove this tag from habits before deleting",
-					});
+				res.status(409).json({
+					success: false,
+					error: "Tag is in use, remove this tag from habits before deleting",
+				});
 
 				return;
 			}
