@@ -370,3 +370,36 @@ habitsRouter.put(
 		}
 	},
 );
+
+habitsRouter.delete(
+	"/:habitId",
+	validate({
+		params: z.object({
+			habitId: z.uuid("Invalid habit ID format"),
+		}),
+	}),
+	async (req, res) => {
+		const userId = getUserIdFromRequest(req);
+
+		const { habitId } = req.params;
+
+		try {
+			const [deletedHabit] = await db
+				.delete(habits)
+				.where(and(eq(habits.id, habitId), eq(habits.userId, userId)))
+				.returning({ id: habits.id });
+
+			if (!deletedHabit) {
+				res.status(404).json({ error: "Habit not found" });
+
+				return;
+			}
+
+			res.json({ success: true, message: "Habit deleted" });
+		} catch (error) {
+			console.error("Delete habit error:", error);
+
+			res.status(500).json({ success: false, error: "Failed to delete habit" });
+		}
+	},
+);
