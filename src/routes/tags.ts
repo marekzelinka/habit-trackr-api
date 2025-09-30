@@ -127,7 +127,7 @@ tagsRouter.get(
 			});
 
 			if (!tag) {
-				res.status(409).json({ success: false, error: "Tag not found" });
+				res.status(404).json({ success: false, error: "Tag not found" });
 
 				return;
 			}
@@ -209,6 +209,55 @@ tagsRouter.put(
 			console.error("Update tag error:", error);
 
 			res.status(500).json({ success: false, error: "Failed to update tag" });
+		}
+	},
+);
+
+tagsRouter.delete(
+	"/:tagId",
+	validate({
+		params: z.object({
+			tagId: z.uuid("Invalid habit ID format"),
+		}),
+	}),
+	async (req, res) => {
+		const { tagId } = req.params;
+
+		try {
+			// Check to see if tag is being used
+			const tagUsage = await db
+				.select()
+				.from(habitTags)
+				.where(eq(habitTags.tagId, tagId))
+				.limit(1);
+
+			if (tagUsage.length !== 0) {
+				res
+					.status(409)
+					.json({
+						success: false,
+						error: "Tag is in use, remove this tag from habits before deleting",
+					});
+
+				return;
+			}
+
+			const [deletedTag] = await db
+				.delete(tags)
+				.where(eq(tags.id, tagId))
+				.returning({ id: tags.id });
+
+			if (!deletedTag) {
+				res.status(404).json({ success: false, error: "Tag not found" });
+
+				return;
+			}
+
+			res.json({ success: true, message: "Tag deleted" });
+		} catch (error) {
+			console.error("Delete tag error:", error);
+
+			res.status(500).json({ success: false, error: "Failed to delete tag" });
 		}
 	},
 );

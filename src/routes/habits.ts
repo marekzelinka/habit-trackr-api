@@ -384,7 +384,7 @@ habitsRouter.put(
 					.returning();
 
 				if (!updatedHabit) {
-					res.status(404).json({ error: "Habit not found" });
+					res.status(404).json({ success: false, error: "Habit not found" });
 
 					tx.rollback();
 				}
@@ -439,7 +439,7 @@ habitsRouter.delete(
 				.returning({ id: habits.id });
 
 			if (!deletedHabit) {
-				res.status(404).json({ error: "Habit not found" });
+				res.status(404).json({ success: false, error: "Habit not found" });
 
 				return;
 			}
