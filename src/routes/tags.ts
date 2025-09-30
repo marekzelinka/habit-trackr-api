@@ -21,35 +21,42 @@ const CreateTagSchema = InsertTagSchema.extend({
 	color: true,
 });
 
-tagsRouter.post("/", validate({ body: CreateTagSchema }), async (req, res) => {
-	const { name, color } = req.body;
+tagsRouter.post(
+	"/",
+	validate({ body: CreateTagSchema }),
+	async function createTag(req, res) {
+		const { name, color } = req.body;
 
-	try {
-		// Check if tag with same name already exists
-		const existingTag = await db.query.tags.findFirst({
-			where: eq(tags.name, name),
-		});
+		try {
+			// Check if tag with same name already exists
+			const existingTag = await db.query.tags.findFirst({
+				where: eq(tags.name, name),
+			});
 
-		if (existingTag) {
+			if (existingTag) {
+				res
+					.status(409)
+					.json({ success: false, error: "Tag with this name already exists" });
+
+				return;
+			}
+
+			const [newTag] = await db
+				.insert(tags)
+				.values({ name, color })
+				.returning();
+
 			res
-				.status(409)
-				.json({ success: false, error: "Tag with this name already exists" });
-
-			return;
+				.status(201)
+				.json({ success: true, message: "Tag created", data: { tag: newTag } });
+		} catch (error) {
+			console.error("Create tag error:", error);
+			res.status(500).json({ success: false, error: "Failed to create tag" });
 		}
+	},
+);
 
-		const [newTag] = await db.insert(tags).values({ name, color }).returning();
-
-		res
-			.status(201)
-			.json({ success: true, message: "Tag created", data: { tag: newTag } });
-	} catch (error) {
-		console.error("Create tag error:", error);
-		res.status(500).json({ success: false, error: "Failed to create tag" });
-	}
-});
-
-tagsRouter.get("/", async (_req, res) => {
+tagsRouter.get("/", async function getAllTags(_req, res) {
 	try {
 		const selectResult = await db.select().from(tags).orderBy(tags.name);
 

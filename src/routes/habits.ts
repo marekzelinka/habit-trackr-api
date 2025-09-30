@@ -31,7 +31,7 @@ habitsRouter.post(
 	validate({
 		body: CreateHabitSchema,
 	}),
-	async (req, res) => {
+	async function createHabit(req, res) {
 		const userId = getUserIdFromRequest(req);
 
 		const { name, description, frequency, targetCount, tagIds } = req.body;
@@ -83,7 +83,7 @@ const UpdateHabitTagsSchema = z.object({
 habitsRouter.post(
 	"/:habitId/tags",
 	validate({ params: HabitIdSchema, body: UpdateHabitTagsSchema }),
-	async (req, res) => {
+	async function addTagsToHabit(req, res) {
 		const userId = getUserIdFromRequest(req);
 
 		const { habitId } = req.params;
@@ -102,7 +102,6 @@ habitsRouter.post(
 				return;
 			}
 
-			// Get existing tags
 			const existingHabitTags = await db
 				.select({ tagId: habitTags.tagId })
 				.from(habitTags)
@@ -111,7 +110,8 @@ habitsRouter.post(
 			const existingHabitTagIds = existingHabitTags.map(
 				(habitTag) => habitTag.tagId,
 			);
-			// Filter out existing tag ids, as we don't want duplicates
+			// Filter the new tag ids to remove existing ones, so we don't
+			// end up with duplicates.
 			const newHabitTagIds = tagIds.filter(
 				(tagId) => !existingHabitTagIds.includes(tagId),
 			);
@@ -134,7 +134,7 @@ habitsRouter.post(
 	},
 );
 
-habitsRouter.get("/", async (req, res) => {
+habitsRouter.get("/", async function getAllHabits(req, res) {
 	const userId = getUserIdFromRequest(req);
 
 	try {

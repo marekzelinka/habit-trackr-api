@@ -11,7 +11,7 @@ export const usersRouter = express.Router();
 
 usersRouter.use(authenticate);
 
-usersRouter.get("/profile", async (req, res) => {
+usersRouter.get("/profile", async function getUserProfile(req, res) {
 	const userId = getUserIdFromRequest(req);
 
 	try {
@@ -56,7 +56,7 @@ const UpdateProfileSchema = UpdateUserSchema.extend({
 usersRouter.put(
 	"/profile",
 	validate({ body: UpdateProfileSchema }),
-	async (req, res) => {
+	async function updateUserProfile(req, res) {
 		const userId = getUserIdFromRequest(req);
 
 		const { email, username, firstName, lastName } = req.body;
@@ -104,7 +104,7 @@ const UpdatePasswordSchema = z.object({
 usersRouter.put(
 	"/password",
 	validate({ body: UpdatePasswordSchema }),
-	async (req, res) => {
+	async function updateUserPassword(req, res) {
 		const userId = getUserIdFromRequest(req);
 
 		const { currentPassword, newPassword } = req.body;
@@ -124,13 +124,12 @@ usersRouter.put(
 				return;
 			}
 
-			// Verify current password
-			const isValidPassword = await comparePassword(
+			const isCurrentPasswordValid = await comparePassword(
 				currentPassword,
 				loggedInUser.password,
 			);
 
-			if (!isValidPassword) {
+			if (!isCurrentPasswordValid) {
 				res
 					.status(400)
 					.json({ success: false, error: "Current password is incorrect" });
