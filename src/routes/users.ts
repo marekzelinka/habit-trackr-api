@@ -11,7 +11,7 @@ export const usersRouter = express.Router();
 
 usersRouter.use(authenticate);
 
-usersRouter.get("/profile", async function getUserProfile(req, res) {
+usersRouter.get("/profile", async (req, res) => {
 	const userId = getUserIdFromRequest(req);
 
 	try {
@@ -56,7 +56,7 @@ const UpdateProfileSchema = UpdateUserSchema.extend({
 usersRouter.put(
 	"/profile",
 	validate({ body: UpdateProfileSchema }),
-	async function updateUserProfile(req, res) {
+	async (req, res) => {
 		const userId = getUserIdFromRequest(req);
 
 		const { email, username, firstName, lastName } = req.body;
@@ -104,7 +104,7 @@ const UpdatePasswordSchema = z.object({
 usersRouter.put(
 	"/password",
 	validate({ body: UpdatePasswordSchema }),
-	async function updateUserPassword(req, res) {
+	async (req, res) => {
 		const userId = getUserIdFromRequest(req);
 
 		const { currentPassword, newPassword } = req.body;

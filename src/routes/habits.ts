@@ -41,7 +41,7 @@ habitsRouter.post(
 	validate({
 		body: CreateHabitSchema,
 	}),
-	async function createHabit(req, res) {
+	async (req, res) => {
 		const userId = getUserIdFromRequest(req);
 
 		const { name, description, frequency, targetCount, tagIds } = req.body;
@@ -75,7 +75,7 @@ habitsRouter.post(
 				data: { habit: newHabit },
 			});
 		} catch (error) {
-			console.error("Create habbit error:", error);
+			console.error("Create habit error:", error);
 
 			res.status(500).json({ success: false, error: "Failed to create habit" });
 		}
@@ -89,7 +89,8 @@ const UpdateHabitTagsSchema = z.object({
 habitsRouter.post(
 	"/:habitId/tags",
 	validate({ params: HabitIdSchema, body: UpdateHabitTagsSchema }),
-	async function addTagsToHabit(req, res) {
+	// Add tags to habit
+	async (req, res) => {
 		const userId = getUserIdFromRequest(req);
 
 		const { habitId } = req.params;
@@ -145,7 +146,8 @@ const CreateHabitCompletionSchema = InsertEntrySchema.pick({ note: true });
 habitsRouter.post(
 	"/:habitId/complete",
 	validate({ params: HabitIdSchema, body: CreateHabitCompletionSchema }),
-	async function logHabitCompletion(req, res) {
+	// Log habit completion
+	async (req, res) => {
 		const userId = getUserIdFromRequest(req);
 
 		const { habitId } = req.params;
@@ -163,12 +165,10 @@ habitsRouter.post(
 
 				return;
 			} else if (!habit.isActive) {
-				res
-					.status(400)
-					.json({
-						success: false,
-						error: "Cannot complete an invactive habit",
-					});
+				res.status(400).json({
+					success: false,
+					error: "Cannot complete an invactive habit",
+				});
 
 				return;
 			}
@@ -190,7 +190,7 @@ habitsRouter.post(
 				data: { entry: newEntry },
 			});
 		} catch (error) {
-			console.error("Complete habbit error:", error);
+			console.error("Complete habit error:", error);
 
 			res
 				.status(500)
@@ -199,7 +199,7 @@ habitsRouter.post(
 	},
 );
 
-habitsRouter.get("/", async function getAllHabits(req, res) {
+habitsRouter.get("/", async (req, res) => {
 	const userId = getUserIdFromRequest(req);
 
 	try {
@@ -230,8 +230,58 @@ habitsRouter.get("/", async function getAllHabits(req, res) {
 			data: { habits: habitsWithTags },
 		});
 	} catch (error) {
-		console.error("Get habbits error:", error);
+		console.error("Get habits error:", error);
 
 		res.status(500).json({ success: false, error: "Failed to fetch habits" });
 	}
 });
+
+habitsRouter.get(
+	"/:habitId",
+	validate({ params: HabitIdSchema }),
+	async (req, res) => {
+		const userId = getUserIdFromRequest(req);
+
+		const { habitId } = req.params;
+
+		try {
+			const habit = await db.query.habits.findFirst({
+				where: and(eq(habits.id, habitId), eq(habits.userId, userId)),
+				with: {
+					habitTags: {
+						with: {
+							tag: true,
+						},
+					},
+					entries: {
+						orderBy: [desc(entries.completion_date)],
+						limit: 10,
+					},
+				},
+			});
+
+			if (!habit) {
+				res.status(404).json({ success: false, error: "Habit not found" });
+
+				return;
+			}
+
+			// Include habit tags directly
+			const habitWithTags = {
+				...habit,
+				tags: habit.habitTags.map((habitTag) => habitTag.tag),
+				habitTags: undefined,
+			};
+
+			res.json({
+				success: true,
+				message: "Habit retrived",
+				data: { habit: habitWithTags },
+			});
+		} catch (error) {
+			console.error("Get habit error:", error);
+
+			res.status(500).json({ success: false, error: "Failed to fetch habit" });
+		}
+	},
+);

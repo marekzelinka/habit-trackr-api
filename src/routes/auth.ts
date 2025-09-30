@@ -27,7 +27,7 @@ const RegisterSchema = InsertUserSchema.extend({
 authRouter.post(
 	"/register",
 	validate({ body: RegisterSchema }),
-	async function register(req, res) {
+	async (req, res) => {
 		const { email, username, password, firstName, lastName } = req.body;
 
 		try {
@@ -78,63 +78,59 @@ const LoginSchema = InsertUserSchema.extend({
 	password: true,
 });
 
-authRouter.post(
-	"/login",
-	validate({ body: LoginSchema }),
-	async function login(req, res) {
-		const { email, password } = req.body;
+authRouter.post("/login", validate({ body: LoginSchema }), async (req, res) => {
+	const { email, password } = req.body;
 
-		try {
-			const [user] = await db
-				.select({
-					id: users.id,
-					email: users.email,
-					username: users.username,
-					password: users.password,
-					firstName: users.firstName,
-					lastName: users.lastName,
-				})
-				.from(users)
-				.where(eq(users.email, email));
+	try {
+		const [user] = await db
+			.select({
+				id: users.id,
+				email: users.email,
+				username: users.username,
+				password: users.password,
+				firstName: users.firstName,
+				lastName: users.lastName,
+			})
+			.from(users)
+			.where(eq(users.email, email));
 
-			if (!user) {
-				res.status(401).json({ success: false, error: "Invalid credentials" });
+		if (!user) {
+			res.status(401).json({ success: false, error: "Invalid credentials" });
 
-				return;
-			}
-
-			const isValidPassword = await comparePassword(password, user.password);
-
-			if (!isValidPassword) {
-				res.status(401).json({ success: false, error: "Invalid credentials" });
-
-				return;
-			}
-
-			const token = await generateToken({
-				id: user.id,
-				email: user.email,
-				username: user.username,
-			});
-
-			res.json({
-				success: true,
-				message: "Login successful",
-				data: {
-					user: {
-						id: user.id,
-						email: user.email,
-						username: user.username,
-						firstName: user.firstName,
-						lastName: user.lastName,
-					},
-					token,
-				},
-			});
-		} catch (error) {
-			console.error("Login error:", error);
-
-			res.status(500).json({ success: false, error: "Failed to login" });
+			return;
 		}
-	},
-);
+
+		const isValidPassword = await comparePassword(password, user.password);
+
+		if (!isValidPassword) {
+			res.status(401).json({ success: false, error: "Invalid credentials" });
+
+			return;
+		}
+
+		const token = await generateToken({
+			id: user.id,
+			email: user.email,
+			username: user.username,
+		});
+
+		res.json({
+			success: true,
+			message: "Login successful",
+			data: {
+				user: {
+					id: user.id,
+					email: user.email,
+					username: user.username,
+					firstName: user.firstName,
+					lastName: user.lastName,
+				},
+				token,
+			},
+		});
+	} catch (error) {
+		console.error("Login error:", error);
+
+		res.status(500).json({ success: false, error: "Failed to login" });
+	}
+});
