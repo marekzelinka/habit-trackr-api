@@ -3,7 +3,7 @@ import express from "express";
 import validate from "express-zod-safe";
 import z from "zod";
 import { db } from "../db/connection.ts";
-import { habitTags, InsertTagSchema, tags } from "../db/schema.ts";
+import { habits, habitTags, InsertTagSchema, tags } from "../db/schema.ts";
 import { authenticate } from "../middleware/auth.ts";
 
 export const tagsRouter = express.Router();
@@ -51,6 +51,7 @@ tagsRouter.post(
 				.json({ success: true, message: "Tag created", data: { tag: newTag } });
 		} catch (error) {
 			console.error("Create tag error:", error);
+
 			res.status(500).json({ success: false, error: "Failed to create tag" });
 		}
 	},
@@ -94,3 +95,49 @@ tagsRouter.get("/popular", async (_req, res) => {
 			.json({ success: false, error: "Failed to fetch popular tags" });
 	}
 });
+
+tagsRouter.get(
+	"/:tagId",
+	validate({ params: z.object({ tagId: z.uuid("Invalid habit ID format") }) }),
+	async (req, res) => {
+		const { tagId } = req.params;
+
+		try {
+			const tag = await db.query.tags.findFirst({
+				where: eq(tags.id, tagId),
+				with: {
+					habitTags: {
+						with: {
+							habit: {
+								columns: {
+									id: true,
+									name: true,
+									description: true,
+									isActive: true,
+								},
+							},
+						},
+					},
+				},
+			});
+
+			if (!tag) {
+				res.status(409).json({ success: false, error: "Tag not found" });
+
+				return;
+			}
+
+			const tagWithHabits = {
+				...tag,
+				habits: tag.habitTags.map((habitTag) => habitTag.habit),
+				habitTags: undefined,
+			};
+
+			res.json({ success: true, data: { tag: tagWithHabits } });
+		} catch (error) {
+			console.error("Get tag error:", error);
+
+			res.status(500).json({ success: false, error: "Failed to fetch tag" });
+		}
+	},
+);

@@ -24,10 +24,13 @@ app.use(morgan("dev", { skip: () => isTestEnv() }));
 
 // Health check endpoint
 app.get("/health", (_req, res) => {
-	res.status(200).json({
-		status: "OK",
-		timestamp: new Date().toISOString(),
-		service: "Habit Trackr API",
+	res.json({
+		success: true,
+		data: {
+			status: "OK",
+			timestamp: new Date().toISOString(),
+			service: "Habit Trackr API",
+		},
 	});
 });
 

@@ -34,7 +34,7 @@ usersRouter.get("/profile", async (req, res) => {
 			return;
 		}
 
-		res.json({ success: true, message: "Profile retrived", data: { user } });
+		res.json({ success: true, data: { user } });
 	} catch (error) {
 		console.error("Get profile error:", error);
 

@@ -230,7 +230,6 @@ habitsRouter.get("/", async (req, res) => {
 
 		res.json({
 			success: true,
-			message: "Habits retrived",
 			data: { habits: habitsWithTags },
 		});
 	} catch (error) {
@@ -283,7 +282,6 @@ habitsRouter.get(
 
 			res.json({
 				success: true,
-				message: "Habit retrived",
 				data: { habit: habitWithTags },
 			});
 		} catch (error) {
@@ -333,7 +331,6 @@ habitsRouter.get(
 
 			res.json({
 				success: true,
-				message: "Habit with tag retrived",
 				data: { habits: habitsWithTag },
 			});
 		} catch (error) {

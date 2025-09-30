@@ -12,13 +12,13 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6Ijg2Y2YzZTA3LTYzMDItNGYzOC05M
 }
 
 ### Add tag ids to habit
-POST http://localhost:3000/api/habits/e9ed6154-fe2b-4e6a-af76-91726c5d71f4/tags
+POST http://localhost:3000/api/habits/e3500be2-3174-40a1-85a0-0582f49ef754/tags
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6Ijg2Y2YzZTA3LTYzMDItNGYzOC05MzliLTgwYzYwZTMxZTNmMiIsImVtYWlsIjoiZGVtb0BoYWJpdHRyYWNrZXIuY29tIiwidXNlcm5hbWUiOiJkZW1vdXNlciIsImlhdCI6MTc1OTIzNDYyNywiZXhwIjoxNzU5ODM5NDI3fQ.AsA_i8n1Mk7EcpxsDrMU9dGngkGHW1duhfKVqwk6Q2M
 
 {
 	"tagIds": [
-		"4e692448-c317-4a5e-b366-deff0ea6ceba", "a82dd4a6-8225-4e2b-b010-e2010eb11ebe"
+		"68e2751f-b8da-4481-8fbf-27c059681f77", "b95887b2-a2a6-47f2-9737-f0e9a2f3e84c"
 	]
 }
 
