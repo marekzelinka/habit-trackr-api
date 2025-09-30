@@ -455,3 +455,44 @@ habitsRouter.delete(
 		}
 	},
 );
+
+habitsRouter.delete(
+	"/:habitId/tags/:tagId",
+	validate({
+		params: z.object({
+			habitId: z.uuid("Invalid habit ID format"),
+			tagId: z.uuid("Invalid tag ID format"),
+		}),
+	}),
+	async (req, res) => {
+		const userId = getUserIdFromRequest(req);
+
+		const { habitId, tagId } = req.params;
+
+		try {
+			// Verify habit belongs to current user
+			const [habit] = await db
+				.select({ isActive: habits.isActive })
+				.from(habits)
+				.where(and(eq(habits.id, habitId), eq(habits.userId, userId)));
+
+			if (!habit) {
+				res.status(404).json({ success: false, error: "Habit not found" });
+
+				return;
+			}
+
+			await db
+				.delete(habitTags)
+				.where(and(eq(habitTags.habitId, habitId), eq(habitTags.tagId, tagId)));
+
+			res.json({ success: true, message: "Tags removed from Habit" });
+		} catch (error) {
+			console.error("Remove tag from habit error:", error);
+
+			res
+				.status(500)
+				.json({ success: false, error: "Failed to remove tag from habit" });
+		}
+	},
+);

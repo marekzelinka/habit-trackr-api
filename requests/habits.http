@@ -36,7 +36,7 @@ GET http://localhost:3000/api/habits
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6Ijg2Y2YzZTA3LTYzMDItNGYzOC05MzliLTgwYzYwZTMxZTNmMiIsImVtYWlsIjoiZGVtb0BoYWJpdHRyYWNrZXIuY29tIiwidXNlcm5hbWUiOiJkZW1vdXNlciIsImlhdCI6MTc1OTIzNDYyNywiZXhwIjoxNzU5ODM5NDI3fQ.AsA_i8n1Mk7EcpxsDrMU9dGngkGHW1duhfKVqwk6Q2M
 
 ### Get habit by id
-GET http://localhost:3000/api/habits/e9ed6154-fe2b-4e6a-af76-91726c5d71f4
+GET http://localhost:3000/api/habits/d5e69a4c-bdee-4b20-b3f1-c5ec1fc62840
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6Ijg2Y2YzZTA3LTYzMDItNGYzOC05MzliLTgwYzYwZTMxZTNmMiIsImVtYWlsIjoiZGVtb0BoYWJpdHRyYWNrZXIuY29tIiwidXNlcm5hbWUiOiJkZW1vdXNlciIsImlhdCI6MTc1OTIzNDYyNywiZXhwIjoxNzU5ODM5NDI3fQ.AsA_i8n1Mk7EcpxsDrMU9dGngkGHW1duhfKVqwk6Q2M
 
 ### Get habits by tag
@@ -55,4 +55,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6Ijg2Y2YzZTA3LTYzMDItNGYzOC05M
 ### Delete habit by id
 DELETE http://localhost:3000/api/habits/e9ed6154-fe2b-4e6a-af76-91726c5d71f4
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6Ijg2Y2YzZTA3LTYzMDItNGYzOC05MzliLTgwYzYwZTMxZTNmMiIsImVtYWlsIjoiZGVtb0BoYWJpdHRyYWNrZXIuY29tIiwidXNlcm5hbWUiOiJkZW1vdXNlciIsImlhdCI6MTc1OTIzNDYyNywiZXhwIjoxNzU5ODM5NDI3fQ.AsA_i8n1Mk7EcpxsDrMU9dGngkGHW1duhfKVqwk6Q2M
+
+### Delete tag from habit
+DELETE http://localhost:3000/api/habits/d5e69a4c-bdee-4b20-b3f1-c5ec1fc62840/tags/9153f9de-4bb1-4aee-9cd3-bad4593ac72f
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6Ijg2Y2YzZTA3LTYzMDItNGYzOC05MzliLTgwYzYwZTMxZTNmMiIsImVtYWlsIjoiZGVtb0BoYWJpdHRyYWNrZXIuY29tIiwidXNlcm5hbWUiOiJkZW1vdXNlciIsImlhdCI6MTc1OTIzNDYyNywiZXhwIjoxNzU5ODM5NDI3fQ.AsA_i8n1Mk7EcpxsDrMU9dGngkGHW1duhfKVqwk6Q2M
