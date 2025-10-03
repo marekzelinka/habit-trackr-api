@@ -3,6 +3,7 @@ import express from "express";
 import helmet from "helmet";
 import morgan from "morgan";
 import { env, isTestEnv } from "../env.ts";
+import { errorHandler, notFound } from "./middleware/error-hanlder.ts";
 import { authRouter } from "./routes/auth.ts";
 import { habitsRouter } from "./routes/habits.ts";
 import { tagsRouter } from "./routes/tags.ts";
@@ -39,3 +40,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/habits", habitsRouter);
 app.use("/api/tags", tagsRouter);
+
+app.use(notFound);
+
+app.use(errorHandler);
