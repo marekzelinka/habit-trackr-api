@@ -11,7 +11,7 @@
 		"rewriteRelativeImportExtensions": true,
 		"allowImportingTsExtensions": true,
 		"lib": ["esnext"],
-		"types": ["node", "vitest/globals"],
+		"types": ["node"],
 
 		// Stricter Typechecking Options
 		// "noUncheckedIndexedAccess": true,
