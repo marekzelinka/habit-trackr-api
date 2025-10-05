@@ -16,7 +16,7 @@
 		"lint": "biome lint --write",
 		"check": "biome check --write"
 	},
-	"packageManager": "pnpm@10.17.0",
+	"packageManager": "pnpm@10.18.0",
 	"devDependencies": {
 		"@biomejs/biome": "2.2.4",
 		"@types/bcrypt": "^6.0.0",
@@ -25,7 +25,9 @@
 		"@types/morgan": "^1.9.10",
 		"@types/node": "^24.6.2",
 		"@types/pg": "^8.15.5",
+		"@types/supertest": "^6.0.3",
 		"drizzle-kit": "^0.31.5",
+		"supertest": "^7.1.4",
 		"typescript": "^5.9.3",
 		"vitest": "^3.2.4"
 	},

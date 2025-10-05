@@ -42,7 +42,7 @@ export async function createTestUser(
 		username: user.username,
 	});
 
-	return { user, token, rawPassword: defaultData.password };
+	return { user, token };
 }
 
 export async function createTestHabit(
