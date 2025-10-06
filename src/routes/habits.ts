@@ -168,9 +168,9 @@ habitsRouter.post(
 				},
 				with: {
 					entries: {
-						orderBy: [desc(entries.completion_date)],
+						orderBy: [desc(entries.completionDate)],
 						columns: {
-							completion_date: true,
+							completionDate: true,
 						},
 					},
 				},
@@ -190,7 +190,7 @@ habitsRouter.post(
 			}
 
 			const completionsLoggedToday = habit.entries.filter((entry) =>
-				isToday(entry.completion_date),
+				isToday(entry.completionDate),
 			);
 			const latestCompletionEntry = completionsLoggedToday.at(0);
 
@@ -206,10 +206,10 @@ habitsRouter.post(
 			// Create a new completion entry
 			const [newEntry] = await db
 				.insert(entries)
-				.values({ habitId, completion_date: new Date(), note })
+				.values({ habitId, completionDate: new Date(), note })
 				.returning({
 					id: entries.id,
-					completion_date: entries.completion_date,
+					completionDate: entries.completionDate,
 					note: entries.note,
 					createdAt: entries.createdAt,
 				});
@@ -287,7 +287,7 @@ habitsRouter.get(
 						},
 					},
 					entries: {
-						orderBy: [desc(entries.completion_date)],
+						orderBy: [desc(entries.completionDate)],
 						limit: 10,
 					},
 				},

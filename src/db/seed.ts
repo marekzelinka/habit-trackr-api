@@ -194,7 +194,7 @@ export async function seed() {
 
 			await db.insert(entries).values({
 				habitId: exerciseHabit.id,
-				completion_date: date,
+				completionDate: date,
 				note: i === 0 ? "Great workout today!" : null,
 			});
 		}
@@ -206,7 +206,7 @@ export async function seed() {
 
 			await db.insert(entries).values({
 				habitId: readingHabit.id,
-				completion_date: date,
+				completionDate: date,
 			});
 		}
 
@@ -218,7 +218,7 @@ export async function seed() {
 
 			await db.insert(entries).values({
 				habitId: meditationHabit.id,
-				completion_date: date,
+				completionDate: date,
 			});
 		}
 
@@ -229,7 +229,7 @@ export async function seed() {
 
 			await db.insert(entries).values({
 				habitId: waterHabit.id,
-				completion_date: date,
+				completionDate: date,
 				note: `Glass ${i + 1} of water`,
 			});
 		}
@@ -241,7 +241,7 @@ export async function seed() {
 
 			await db.insert(entries).values({
 				habitId: codingHabit.id,
-				completion_date: date,
+				completionDate: date,
 			});
 		}
 
@@ -284,7 +284,7 @@ export async function seed() {
 				},
 				entries: {
 					limit: 5,
-					orderBy: (entries, { desc }) => [desc(entries.completion_date)],
+					orderBy: (entries, { desc }) => [desc(entries.completionDate)],
 				},
 			},
 		});

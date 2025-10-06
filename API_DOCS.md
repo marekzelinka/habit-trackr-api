@@ -197,7 +197,7 @@ Authorization: Bearer <token>
   "entry": {
     "id": "uuid-here",
     "habitId": "habit-uuid",
-    "completion_date": "2024-01-01T12:00:00Z",
+    "completionDate": "2024-01-01T12:00:00Z",
     "note": null,
     "createdAt": "2024-01-01T12:00:00Z"
   }

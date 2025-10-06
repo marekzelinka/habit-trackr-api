@@ -42,8 +42,7 @@ export const entries = table("entries", {
 		.uuid("habit_id")
 		.references(() => habits.id, { onDelete: "cascade" })
 		.notNull(),
-	// TODO: rename to completionDate
-	completion_date: t.timestamp("completion_date").defaultNow().notNull(),
+	completionDate: t.timestamp("completion_date").defaultNow().notNull(),
 	note: t.text("note"),
 	createdAt: t.timestamp("created_at").defaultNow().notNull(),
 });
