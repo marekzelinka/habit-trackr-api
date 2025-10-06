@@ -1,6 +1,6 @@
-import { hashPassword } from "../utils/password.ts";
-import { db } from "./connection.ts";
-import { entries, habits, habitTags, tags, users } from "./schema.ts";
+import { db } from "../../src/db/connection.ts";
+import * as schema from "../../src/db/schema.ts";
+import { hashPassword } from "../../src/utils/password.ts";
 
 export async function seed() {
 	console.log("🌱 Starting database seed…");
@@ -8,11 +8,11 @@ export async function seed() {
 	try {
 		console.log("Clearing existing data…");
 
-		await db.delete(entries);
-		await db.delete(habitTags);
-		await db.delete(habits);
-		await db.delete(tags);
-		await db.delete(users);
+		await db.delete(schema.entries);
+		await db.delete(schema.habitTags);
+		await db.delete(schema.habits);
+		await db.delete(schema.tags);
+		await db.delete(schema.users);
 
 		console.log("Done clearing existing data…");
 		console.log("Creating demo users…");
@@ -21,7 +21,7 @@ export async function seed() {
 		const hashedPassword = await hashPassword(password);
 
 		const [demoUser] = await db
-			.insert(users)
+			.insert(schema.users)
 			.values({
 				email: "demo@habittracker.com",
 				username: "demouser",
@@ -32,7 +32,7 @@ export async function seed() {
 			.returning();
 
 		const [johnDoe] = await db
-			.insert(users)
+			.insert(schema.users)
 			.values({
 				email: "john@example.com",
 				username: "johndoe",
@@ -46,7 +46,7 @@ export async function seed() {
 		console.log("Creating tags…");
 
 		const [healthTag] = await db
-			.insert(tags)
+			.insert(schema.tags)
 			.values({
 				name: "Health",
 				color: "#10B981",
@@ -54,7 +54,7 @@ export async function seed() {
 			.returning();
 
 		const [productivityTag] = await db
-			.insert(tags)
+			.insert(schema.tags)
 			.values({
 				name: "Productivity",
 				color: "#3B82F6",
@@ -62,7 +62,7 @@ export async function seed() {
 			.returning();
 
 		const [mindfulnessTag] = await db
-			.insert(tags)
+			.insert(schema.tags)
 			.values({
 				name: "Mindfulness",
 				color: "#8B5CF6",
@@ -70,7 +70,7 @@ export async function seed() {
 			.returning();
 
 		const [fitnessTag] = await db
-			.insert(tags)
+			.insert(schema.tags)
 			.values({
 				name: "Fitness",
 				color: "#EF4444",
@@ -78,7 +78,7 @@ export async function seed() {
 			.returning();
 
 		const [learningTag] = await db
-			.insert(tags)
+			.insert(schema.tags)
 			.values({
 				name: "Learning",
 				color: "#F59E0B",
@@ -86,7 +86,7 @@ export async function seed() {
 			.returning();
 
 		const [personalTag] = await db
-			.insert(tags)
+			.insert(schema.tags)
 			.values({
 				name: "Personal",
 				color: "#EC4899",
@@ -97,7 +97,7 @@ export async function seed() {
 		console.log("Creating demo habits…");
 
 		const [exerciseHabit] = await db
-			.insert(habits)
+			.insert(schema.habits)
 			.values({
 				userId: demoUser.id,
 				name: "Exercise",
@@ -108,13 +108,13 @@ export async function seed() {
 			.returning();
 
 		// Add tags to exercise habit
-		await db.insert(habitTags).values([
+		await db.insert(schema.habitTags).values([
 			{ habitId: exerciseHabit.id, tagId: healthTag.id },
 			{ habitId: exerciseHabit.id, tagId: fitnessTag.id },
 		]);
 
 		const [readingHabit] = await db
-			.insert(habits)
+			.insert(schema.habits)
 			.values({
 				userId: demoUser.id,
 				name: "Read for 30 minutes",
@@ -125,13 +125,13 @@ export async function seed() {
 			.returning();
 
 		// Add tags to reading habit
-		await db.insert(habitTags).values([
+		await db.insert(schema.habitTags).values([
 			{ habitId: readingHabit.id, tagId: learningTag.id },
 			{ habitId: readingHabit.id, tagId: personalTag.id },
 		]);
 
 		const [meditationHabit] = await db
-			.insert(habits)
+			.insert(schema.habits)
 			.values({
 				userId: demoUser.id,
 				name: "Meditate",
@@ -142,13 +142,13 @@ export async function seed() {
 			.returning();
 
 		// Add tags to meditation habit
-		await db.insert(habitTags).values([
+		await db.insert(schema.habitTags).values([
 			{ habitId: meditationHabit.id, tagId: mindfulnessTag.id },
 			{ habitId: meditationHabit.id, tagId: healthTag.id },
 		]);
 
 		const [waterHabit] = await db
-			.insert(habits)
+			.insert(schema.habits)
 			.values({
 				userId: demoUser.id,
 				name: "Drink 8 glasses of water",
@@ -160,12 +160,12 @@ export async function seed() {
 
 		// Add tag to water habit
 		await db
-			.insert(habitTags)
+			.insert(schema.habitTags)
 			.values([{ habitId: waterHabit.id, tagId: healthTag.id }]);
 
 		// Create habits for John
 		const [codingHabit] = await db
-			.insert(habits)
+			.insert(schema.habits)
 			.values({
 				userId: johnDoe.id,
 				name: "Code for 1 hour",
@@ -176,7 +176,7 @@ export async function seed() {
 			.returning();
 
 		// Add tags to coding habit
-		await db.insert(habitTags).values([
+		await db.insert(schema.habitTags).values([
 			{ habitId: codingHabit.id, tagId: learningTag.id },
 			{ habitId: codingHabit.id, tagId: productivityTag.id },
 		]);
@@ -192,7 +192,7 @@ export async function seed() {
 			const date = new Date(today);
 			date.setDate(date.getDate() - i);
 
-			await db.insert(entries).values({
+			await db.insert(schema.entries).values({
 				habitId: exerciseHabit.id,
 				completionDate: date,
 				note: i === 0 ? "Great workout today!" : null,
@@ -204,7 +204,7 @@ export async function seed() {
 			const date = new Date(today);
 			date.setDate(date.getDate() - i);
 
-			await db.insert(entries).values({
+			await db.insert(schema.entries).values({
 				habitId: readingHabit.id,
 				completionDate: date,
 			});
@@ -216,7 +216,7 @@ export async function seed() {
 			const date = new Date(today);
 			date.setDate(date.getDate() - daysAgo);
 
-			await db.insert(entries).values({
+			await db.insert(schema.entries).values({
 				habitId: meditationHabit.id,
 				completionDate: date,
 			});
@@ -227,7 +227,7 @@ export async function seed() {
 			const date = new Date(today);
 			date.setHours(8 + i * 2, 0, 0, 0); // Different times throughout the day
 
-			await db.insert(entries).values({
+			await db.insert(schema.entries).values({
 				habitId: waterHabit.id,
 				completionDate: date,
 				note: `Glass ${i + 1} of water`,
@@ -239,7 +239,7 @@ export async function seed() {
 			const date = new Date(today);
 			date.setDate(date.getDate() - i);
 
-			await db.insert(entries).values({
+			await db.insert(schema.entries).values({
 				habitId: codingHabit.id,
 				completionDate: date,
 			});
@@ -307,10 +307,10 @@ export async function seed() {
 
 		console.log("Done testing relational queries…");
 
-		const userCount = await db.$count(users);
-		const tagCount = await db.$count(tags);
-		const habitTagCount = await db.$count(habitTags);
-		const entriesCount = await db.$count(entries);
+		const userCount = await db.$count(schema.users);
+		const tagCount = await db.$count(schema.tags);
+		const habitTagCount = await db.$count(schema.habitTags);
+		const entriesCount = await db.$count(schema.entries);
 
 		console.log("✅ Database seeded successfully!");
 		console.log("");

@@ -1,5 +1,5 @@
 ### Healthcheck endpoint
 GET http://localhost:3000/health
 
-### Not found
-GET http://localhost:3000/api/not-found
+### Detailed healthcheck endpoint
+GET http://localhost:3000/health/detailed

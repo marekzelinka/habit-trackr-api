@@ -38,7 +38,7 @@ authRouter.post(
 				.values({
 					email,
 					username,
-					password: hashedPassword,
+					password: hashedPassword, // Store hash, not plain text!
 					firstName,
 					lastName,
 				})
@@ -46,9 +46,7 @@ authRouter.post(
 					id: users.id,
 					email: users.email,
 					username: users.username,
-					firstName: users.firstName,
-					lastName: users.lastName,
-					createdAt: users.createdAt,
+					// password excluded
 				});
 
 			const token = await generateToken({
@@ -59,7 +57,7 @@ authRouter.post(
 
 			res.status(201).json({
 				success: true,
-				message: "User created",
+				message: "User registered",
 				data: { user, token },
 			});
 		} catch (error) {
@@ -119,14 +117,13 @@ authRouter.post(
 
 			res.json({
 				success: true,
-				message: "Login successful",
+				message: "Logged in",
 				data: {
 					user: {
 						id: user.id,
 						email: user.email,
 						username: user.username,
-						firstName: user.firstName,
-						lastName: user.lastName,
+						// password excluded
 					},
 					token,
 				},

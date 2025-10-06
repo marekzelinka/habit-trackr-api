@@ -288,7 +288,7 @@ habitsRouter.get(
 					},
 					entries: {
 						orderBy: [desc(entries.completionDate)],
-						limit: 10,
+						limit: 10, // Recent entries only
 					},
 				},
 			});

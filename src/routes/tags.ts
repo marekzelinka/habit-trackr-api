@@ -48,7 +48,10 @@ tagsRouter.post(
 
 			const [newTag] = await db
 				.insert(tags)
-				.values({ name, color })
+				.values({
+					name,
+					color: color ?? "#6B7280", // Default gray color
+				})
 				.returning();
 
 			res
@@ -132,6 +135,7 @@ tagsRouter.get(
 				return;
 			}
 
+			// Transform the data
 			const tagWithHabits = {
 				...tag,
 				habits: tag.habitTags.map((habitTag) => habitTag.habit),

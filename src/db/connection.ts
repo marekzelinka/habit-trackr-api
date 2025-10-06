@@ -1,7 +1,7 @@
 import { remember } from "@epic-web/remember";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
-import { env, isProd } from "../../env.ts";
+import { env, isProdEnv } from "../../env.ts";
 import * as schema from "./schema.ts";
 
 function createPool() {
@@ -10,12 +10,13 @@ function createPool() {
 	return pool;
 }
 
-let client: Pool;
+let pool: Pool;
 
-if (isProd()) {
-	client = createPool();
+if (isProdEnv()) {
+	pool = createPool();
 } else {
-	client = remember("dbPool", () => createPool());
+	// In development, reuse the same pool across restarts
+	pool = remember("dbPool", () => createPool());
 }
 
-export const db = drizzle({ client, schema });
+export const db = drizzle({ client: pool, schema });

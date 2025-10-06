@@ -36,13 +36,16 @@ Content-Type: application/json
 
 ```json
 {
-  "message": "User registered successfully",
-  "user": {
-    "id": "uuid-here",
-    "email": "user@example.com",
-    "username": "johndoe"
-  },
-  "token": "jwt-token-here"
+  "success": true,
+  "message": "User registered",
+  "data": {
+    "user": {
+      "id": "uuid-here",
+      "email": "user@example.com",
+      "username": "johndoe"
+    },
+    "token": "jwt-token-here"
+  }
 }
 ```
 
@@ -62,12 +65,15 @@ Content-Type: application/json
 
 ```json
 {
-  "message": "Login successful",
-  "token": "jwt-token-here",
-  "user": {
-    "id": "uuid-here",
-    "email": "user@example.com",
-    "username": "johndoe"
+  "success": true,
+  "message": "Logged in",
+  "data": {
+    "user": {
+      "id": "uuid-here",
+      "email": "user@example.com",
+      "username": "johndoe"
+    },
+    "token": "jwt-token-here",
   }
 }
 ```
@@ -85,19 +91,31 @@ Authorization: Bearer <token>
 
 ```json
 {
-  "habits": [
-    {
-      "id": "uuid-here",
-      "userId": "user-uuid",
-      "name": "Exercise",
-      "description": "Daily workout routine",
-      "frequency": "daily",
-      "targetCount": 1,
-      "isActive": true,
-      "createdAt": "2024-01-01T00:00:00Z",
-      "updatedAt": "2024-01-01T00:00:00Z"
-    }
-  ]
+  "success": true,
+  "data": {
+    "habits": [
+      {
+        "id": "uuid-here",
+        "userId": "user-uuid",
+        "name": "Exercise",
+        "description": "Daily workout routine",
+        "frequency": "daily",
+        "targetCount": 1,
+        "isActive": true,
+        "createdAt": "2024-01-01T00:00:00Z",
+        "updatedAt": "2024-01-01T00:00:00Z",
+        "tags": [
+          {
+            "id": "tag-uuid",
+            "name": "Health",
+            "color": "#10B981",
+            "createdAt": "2024-01-01T00:00:00Z",
+            "updatedAt": "2024-01-01T00:00:00Z"
+          }
+        ]
+      }
+    ]
+  }
 }
 ```
 
@@ -120,7 +138,8 @@ Content-Type: application/json
 
 ```json
 {
-  "message": "Habit created successfully",
+  "success": true,
+  "message": "Habit created",
   "habit": {
     "id": "uuid-here",
     "userId": "user-uuid",
@@ -152,7 +171,8 @@ Content-Type: application/json
 
 ```json
 {
-  "message": "Habit updated successfully",
+  "success": true,
+  "message": "Habit updated",
   "habit": {
     "id": "uuid-here",
     "name": "Read for 45 minutes",
@@ -176,7 +196,8 @@ Authorization: Bearer <token>
 
 ```json
 {
-  "message": "Habit deleted successfully"
+  "success": true,
+  "message": "Habit deleted"
 }
 ```
 
@@ -193,13 +214,16 @@ Authorization: Bearer <token>
 
 ```json
 {
-  "message": "Habit completed successfully",
-  "entry": {
-    "id": "uuid-here",
-    "habitId": "habit-uuid",
-    "completionDate": "2024-01-01T12:00:00Z",
-    "note": null,
-    "createdAt": "2024-01-01T12:00:00Z"
+  "success": true,
+  "message": "Habit completed",
+  "data": {
+    "entry": {
+      "id": "uuid-here",
+      "habitId": "habit-uuid",
+      "completionDate": "2024-01-01T12:00:00Z",
+      "note": null,
+      "createdAt": "2024-01-01T12:00:00Z"
+    }
   }
 }
 ```
@@ -247,13 +271,16 @@ Authorization: Bearer <token>
 
 ```json
 {
-  "user": {
-    "id": "uuid-here",
-    "email": "user@example.com",
-    "username": "johndoe",
-    "firstName": "John",
-    "lastName": "Doe",
-    "createdAt": "2024-01-01T00:00:00Z"
+  "success": true,
+  "data": {
+    "user": {
+      "id": "uuid-here",
+      "email": "user@example.com",
+      "username": "johndoe",
+      "firstName": "John",
+      "lastName": "Doe",
+      "createdAt": "2024-01-01T00:00:00Z"
+    }
   }
 }
 ```
@@ -275,7 +302,8 @@ Content-Type: application/json
 
 ```json
 {
-  "message": "Profile updated successfully",
+  "success": true,
+  "message": "Profile updated",
   "user": {
     "id": "uuid-here",
     "email": "user@example.com",
@@ -303,7 +331,8 @@ Content-Type: application/json
 
 ```json
 {
-  "message": "Password changed successfully"
+  "success": true,
+  "message": "Password changed"
 }
 ```
 
@@ -313,6 +342,7 @@ Content-Type: application/json
 
 ```json
 {
+  "success": false,
   "error": "Validation failed",
   "details": [
     {
@@ -405,14 +435,14 @@ curl -X POST http://localhost:3000/api/habits/HABIT_ID/complete \
   -H "Authorization: Bearer TOKEN"
 ```
 
-### Get habit statistics
+### TODO: Get habit statistics
 
 ```bash
 curl -X GET http://localhost:3000/api/habits/HABIT_ID/stats \
   -H "Authorization: Bearer TOKEN"
 ```
 
-## Rate Limiting
+## TODO: Rate Limiting
 
 The API implements rate limiting to prevent abuse:
 - Authentication endpoints: 5 requests per minute
@@ -430,7 +460,7 @@ Example:
 GET /habits?page=2&limit=20
 ```
 
-## Webhook Events (Future Enhancement)
+## TODO: Webhook Events (Future Enhancement)
 
 The API can be extended to support webhooks for the following events:
 - `habit.created` - When a new habit is created

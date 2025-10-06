@@ -3,9 +3,9 @@ POST http://localhost:3000/api/auth/register
 Content-Type: application/json
 
 {
-  "email": "kent@remix.com",
-  "username": "kentcdodds",
-  "password": "kentiscool"
+  "email": "michael@remix.com",
+  "username": "michaelcdodds",
+  "password": "michaeliscool"
 }
 
 ### Login with password

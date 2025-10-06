@@ -6,8 +6,9 @@ export interface RequestWithUser extends Request {
 	user?: JWTPayload;
 }
 
-// biome-ignore lint/suspicious/noExplicitAny: We don't really care
+// biome-ignore lint/suspicious/noExplicitAny: This is tricky, we don't want to enforce specific types for the request fields, because we need this to be as generic as possible, so that we can type assert the request with a user property
 export function getUserIdFromRequest(req: Request<any, any, any, any>) {
+	// User is guaranteed to exist after auth middleware
 	const userId = (req as RequestWithUser).user?.id as string;
 
 	return userId;

@@ -87,6 +87,6 @@ try {
 }
 
 // Helper functions for environment checks
-export const isProd = () => env.NODE_ENV === "production";
-export const isDev = () => env.NODE_ENV === "development";
+export const isProdEnv = () => env.NODE_ENV === "production";
+export const isDevEnv = () => env.NODE_ENV === "development";
 export const isTestEnv = () => env.NODE_ENV === "test";

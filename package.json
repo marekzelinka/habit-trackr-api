@@ -11,7 +11,7 @@
 		"db:push": "drizzle-kit push",
 		"db:migrate": "drizzle-kit migrate",
 		"db:studio": "drizzle-kit studio",
-		"db:seed": "node src/db/seed.ts",
+		"db:seed": "node scripts/db/seed.ts",
 		"format": "biome format --write",
 		"lint": "biome lint --write",
 		"check": "biome check --write"

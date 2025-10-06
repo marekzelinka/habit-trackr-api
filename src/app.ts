@@ -6,6 +6,7 @@ import { env, isTestEnv } from "../env.ts";
 import { errorHandler, notFound } from "./middleware/error-hanlder.ts";
 import { authRouter } from "./routes/auth.ts";
 import { habitsRouter } from "./routes/habits.ts";
+import { healthRouter } from "./routes/health.ts";
 import { tagsRouter } from "./routes/tags.ts";
 import { usersRouter } from "./routes/users.ts";
 
@@ -24,16 +25,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev", { skip: () => isTestEnv() }));
 
 // Health check endpoint
-app.get("/health", (_req, res) => {
-	res.json({
-		success: true,
-		data: {
-			status: "OK",
-			timestamp: new Date().toISOString(),
-			service: "Habit Trackr API",
-		},
-	});
-});
+app.use("/health", healthRouter);
 
 // Routes
 app.use("/api/auth", authRouter);
