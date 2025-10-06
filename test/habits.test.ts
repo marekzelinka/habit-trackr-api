@@ -66,6 +66,43 @@ describe("Habits API", () => {
 		});
 	});
 
+	describe("POST /api/habits/:habitId/complete", () => {
+		it("should mark habit as completed", async () => {
+			const { user, token } = await createTestUser();
+
+			const habit = await createTestHabit(user.id);
+
+			const response = await request(app)
+				.post(`/api/habits/${habit.id}/complete`)
+				.set("Authorization", `Bearer ${token}`)
+				.send({});
+
+			expect(response.statusCode).toBe(201);
+			expect(response.body.data.entry).toBeDefined();
+		});
+
+		it("should prevent duplicate completion attempts on the same day", async () => {
+			const { user, token } = await createTestUser();
+
+			const habit = await createTestHabit(user.id);
+
+			// Complete the habit for the first time
+			await request(app)
+				.post(`/api/habits/${habit.id}/complete`)
+				.set("Authorization", `Bearer ${token}`)
+				.send({});
+
+			// Complete the habit for the second time
+			// This should return an error
+			const response = await request(app)
+				.post(`/api/habits/${habit.id}/complete`)
+				.set("Authorization", `Bearer ${token}`)
+				.send({});
+
+			expect(response.statusCode).toBe(400);
+		});
+	});
+
 	describe("GET /api/habits/", () => {
 		it("should get all user habits", async () => {
 			const { user, token } = await createTestUser();

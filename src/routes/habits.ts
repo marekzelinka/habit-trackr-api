@@ -1,3 +1,4 @@
+import { isSameDay, isThisMonth, isThisWeek, isToday } from "date-fns";
 import { and, desc, eq } from "drizzle-orm";
 import express from "express";
 import validate from "express-zod-safe";
@@ -158,10 +159,22 @@ habitsRouter.post(
 
 		try {
 			// Verify habit belongs to current user
-			const [habit] = await db
-				.select({ isActive: habits.isActive })
-				.from(habits)
-				.where(and(eq(habits.id, habitId), eq(habits.userId, userId)));
+			const habit = await db.query.habits.findFirst({
+				where: and(eq(habits.id, habitId), eq(habits.userId, userId)),
+				columns: {
+					frequency: true,
+					targetCount: true,
+					isActive: true,
+				},
+				with: {
+					entries: {
+						orderBy: [desc(entries.completion_date)],
+						columns: {
+							completion_date: true,
+						},
+					},
+				},
+			});
 
 			if (!habit) {
 				res.status(404).json({ success: false, error: "Habit not found" });
@@ -171,6 +184,20 @@ habitsRouter.post(
 				res.status(400).json({
 					success: false,
 					error: "Cannot complete an invactive habit",
+				});
+
+				return;
+			}
+
+			const completionsLoggedToday = habit.entries.filter((entry) =>
+				isToday(entry.completion_date),
+			);
+			const latestCompletionEntry = completionsLoggedToday.at(0);
+
+			if (latestCompletionEntry) {
+				res.status(400).json({
+					success: false,
+					error: "Cannot complete an already completed habit for today",
 				});
 
 				return;
@@ -367,7 +394,6 @@ habitsRouter.put(
 			tagIds: true,
 		}),
 	}),
-	// Log habit completion
 	async (req, res) => {
 		const userId = getUserIdFromRequest(req);
 
@@ -383,9 +409,7 @@ habitsRouter.put(
 					.returning();
 
 				if (!updatedHabit) {
-					res.status(404).json({ success: false, error: "Habit not found" });
-
-					tx.rollback();
+					throw new Error("Habit not found");
 				}
 
 				// If tags are provided, update the associations
@@ -412,6 +436,14 @@ habitsRouter.put(
 				data: { habit: updatedHabit },
 			});
 		} catch (error) {
+			if (error instanceof Error) {
+				if (error.message === "Habit not found") {
+					res.status(404).json({ error: "Habit not found" });
+
+					return;
+				}
+			}
+
 			console.error("Update habit error:", error);
 
 			res.status(500).json({ success: false, error: "Failed to update habit" });
