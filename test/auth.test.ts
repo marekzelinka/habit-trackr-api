@@ -22,10 +22,9 @@ describe("Authentication Endpoints", () => {
 
 			expect(response.statusCode).toBe(201);
 			expect(response.body).toHaveProperty("message", "User created");
-			expect(response.body).toHaveProperty("data");
-			expect(response.body.data).toHaveProperty("user");
-			expect(response.body.data.user).not.toHaveProperty("password");
-			expect(response.body.data).toHaveProperty("token");
+			expect(response.body).toHaveProperty("data.user");
+			expect(response.body).toHaveProperty("data.token");
+			expect(response.body).not.toHaveProperty("data.user.password");
 		});
 
 		it("should return 400 for invalid email", async () => {
@@ -40,7 +39,10 @@ describe("Authentication Endpoints", () => {
 				.send(invalidUserData);
 
 			expect(response.statusCode).toBe(400);
-			expect(response.body[0].errors[0].message).toMatch(/invalid email/i);
+			expect(response.body).toHaveProperty(
+				[0, "errors", 0, "message"],
+				"Invalid email format",
+			);
 		});
 
 		it("should return 400 for short email", async () => {
@@ -55,8 +57,9 @@ describe("Authentication Endpoints", () => {
 				.send(invalidUserData);
 
 			expect(response.statusCode).toBe(400);
-			expect(response.body[0].errors[0].message).toMatch(
-				/password must be at least 8 characters/i,
+			expect(response.body).toHaveProperty(
+				[0, "errors", 0, "message"],
+				"Password must be at least 8 characters",
 			);
 		});
 	});
@@ -77,10 +80,8 @@ describe("Authentication Endpoints", () => {
 
 			expect(response.statusCode).toBe(200);
 			expect(response.body).toHaveProperty("message", "Login successful");
-			expect(response.body).toHaveProperty("data");
-			expect(response.body.data).toHaveProperty("user");
-			expect(response.body.data.user).not.toHaveProperty("password");
-			expect(response.body.data).toHaveProperty("token");
+			expect(response.body).not.toHaveProperty("data.user.password");
+			expect(response.body).toHaveProperty("data.token");
 		});
 
 		it("should return 400 for missing email", async () => {
@@ -95,8 +96,9 @@ describe("Authentication Endpoints", () => {
 				.send(invalidCredentials);
 
 			expect(response.statusCode).toBe(400);
-			expect(response.body[0].errors[0].message).toMatch(
-				/invalid email format/i,
+			expect(response.body).toHaveProperty(
+				[0, "errors", 0, "message"],
+				"Invalid email format",
 			);
 		});
 
@@ -111,7 +113,6 @@ describe("Authentication Endpoints", () => {
 			const response = await request(app)
 				.post("/api/auth/login")
 				.send(invalidCredentials);
-			console.log(response.body);
 
 			expect(response.statusCode).toBe(401);
 			expect(response.body).toHaveProperty("error", "Invalid credentials");
