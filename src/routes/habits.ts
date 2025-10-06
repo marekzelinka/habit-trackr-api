@@ -23,6 +23,7 @@ habitsRouter.post(
 		body: InsertHabitSchema.extend({
 			name: z
 				.string()
+				.trim()
 				.min(1, "Habit name is required")
 				.max(100, "Name too long"),
 			description: z.string().optional(),
