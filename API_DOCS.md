@@ -239,7 +239,7 @@ Authorization: Bearer <token>
 
 ### Habit Statistics
 
-#### Get Habit Stats (Data Aggregation Endpoint)
+#### TODO: Get Habit Stats (Data Aggregation Endpoint)
 
 ```http
 GET /habits/:id/stats
