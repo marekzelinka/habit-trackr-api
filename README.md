@@ -25,28 +25,23 @@ The goal of this project was to learn Drizzle ORM while creating a habit trackin
 
 ## Setup
 
-1. Clone this repoository from [GitHub](https://github.com/marekzelinka/habit-trackr-api/):
+- Clone this repoository from [GitHub](https://github.com/marekzelinka/habit-trackr-api/):
   - Running: `git clone https://github.com/marekzelinka/habit-trackr-api/ && cd habit-trackr-api`
-
-2. Install dependencies using [pnpm](https://pnpm.io/):
+- Install dependencies using [pnpm](https://pnpm.io/):
   - You'll need to have [Node.js](https://nodejs.org/) installed on your machine (`>=v22`)
   - You'll need to have [pnpm](https://pnpm.io/) installed on your machine
   - Running: `pnpm install`
-
-3. Setup database:
+- Setup database:
   1. Go to [https://neon.new/](https://neon.new/)
   2. Create new database in the browser and copy the `DATABASE_URL`
   3. Paste as `DATABASE_URL` in your [`.env`](./.env) file
-
-3. Fill in the required environment variables:
+- Fill in the required environment variables:
   - Copy the contents of the [`.env.exmaple`](./.env.example) file into a new [`.env`](./.env) file
   - Paste the copied `DATABASE_URL` in your [`.env`](./.env) file
-
-4. **Important** Push the application database schema to your new database:
+- **Important** Push the application database schema to your new database:
   - Running: `pnpm db:push`
   - Your database connection is now production-ready
-
-5. (*Optional*) Seed your database with dummy data:
+- (*Optional step*) Seed your database with dummy data:
   - Running: `pnpm db:seed`
 
 ## Credits
