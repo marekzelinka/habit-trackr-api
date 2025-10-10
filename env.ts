@@ -19,28 +19,60 @@ export const env = createEnv({
 	server: {
 		// Node environment
 		NODE_ENV: z
-			.enum(["development", "production", "test"])
+			.enum(["development", "production", "test"], {
+				error: "NODE_ENV must be development, production, or test",
+			})
 			.default("development"),
 
-		APP_STAGE: z.enum(["dev", "production", "test"]).default("dev"),
+		APP_STAGE: z
+			.enum(["dev", "production", "test"], {
+				error: "APP_STAGE must be dev, production, or test",
+			})
+			.default("dev"),
 
 		// Server
-		PORT: z.coerce.number().positive().default(3000),
-		HOST: z.string().default("localhost"),
+		PORT: z.coerce
+			.number({ error: "PORT must be a number" })
+			.positive({ error: "PORT must be greater than 0" })
+			.max(65536, { error: "PORT must be less than 65536" })
+			.default(3000),
+		HOST: z.string({ error: "Host must be a string" }).default("localhost"),
 
 		// Database
-		DATABASE_URL: z.string().startsWith("postgresql://"),
-		DATABASE_POOL_MIN: z.coerce.number().min(0).default(2),
-		DATABASE_POOL_MAX: z.coerce.number().positive().default(10),
+		DATABASE_URL: z.url({
+			protocol: /^postgresql$/,
+			error: "Invalid DATABASE_URL format",
+		}),
+		DATABASE_POOL_MIN: z.coerce
+			.number({ error: "DATABASE_POOL_MIN must be a number" })
+			.min(0, { error: "DATABASE_POOL_MIN must be 0 or greater" })
+			.default(2),
+		DATABASE_POOL_MAX: z.coerce
+			.number({ error: "DATABASE_POOL_MAX must be a number" })
+			.positive({ error: "DATABASE_POOL_MAX must be 0 or greater" })
+			.default(10),
 
 		// JWT & Auth
-		JWT_SECRET: z.string().min(32, "JWT_SECRET must be at least 32 characters"),
-		JWT_EXPIRES_IN: z.string().default("7d"),
-		REFRESH_TOKEN_SECRET: z.string().min(32).optional(),
-		REFRESH_TOKEN_EXPIRES_IN: z.string().default("30d"),
+		JWT_SECRET: z
+			.string({ error: "JWT_SECRET must be a string" })
+			.min(32, "JWT_SECRET must be at least 32 characters"),
+		JWT_EXPIRES_IN: z
+			.string({ error: "JWT_EXPIRES_IN must be a string" })
+			.default("7d"),
+		REFRESH_TOKEN_SECRET: z
+			.string({ error: "REFRESH_TOKEN_SECRET must be a string" })
+			.min(32, { error: "REFRESH_TOKEN_SECRET must be 32 or more character" })
+			.optional(),
+		REFRESH_TOKEN_EXPIRES_IN: z
+			.string({ error: "REFRESH_TOKEN_EXPIRES_IN must be a string" })
+			.default("30d"),
 
 		// Security
-		BCRYPT_ROUNDS: z.coerce.number().min(10).max(20).default(12),
+		BCRYPT_ROUNDS: z.coerce
+			.number({ error: "BCRYPT_ROUNDS must be a string" })
+			.min(10, { error: "BCRYPT_ROUNDS must be 10 or greater" })
+			.max(20, { error: "BCRYPT_ROUNDS must be 20 or less" })
+			.default(12),
 
 		// CORS
 		CORS_ORIGIN: z
@@ -57,7 +89,9 @@ export const env = createEnv({
 
 		// Logging
 		LOG_LEVEL: z
-			.enum(["error", "warn", "info", "debug", "trace"])
+			.enum(["error", "warn", "info", "debug", "trace"], {
+				error: "LOG_LEVEL must be error, warn, info, debug, or trace",
+			})
 			.default(isProduction ? "info" : "debug"),
 	},
 	runtimeEnv: process.env,

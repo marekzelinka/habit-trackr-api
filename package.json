@@ -15,7 +15,8 @@
 		"db:seed": "node scripts/seed-db.ts",
 		"format": "biome format --write",
 		"lint": "biome lint --write",
-		"check": "biome check --write"
+		"check": "biome check --write",
+		"typecheck": "tsc --noEmit"
 	},
 	"packageManager": "pnpm@10.18.2",
 	"devDependencies": {

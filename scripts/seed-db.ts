@@ -268,27 +268,6 @@ export async function seedDatabase() {
 			},
 		});
 
-		// Query habits with their tags
-		const habitsWithTags = await db.query.habits.findMany({
-			limit: 3,
-			with: {
-				user: {
-					columns: {
-						password: false, // Exclude password from results
-					},
-				},
-				habitTags: {
-					with: {
-						tag: true,
-					},
-				},
-				entries: {
-					limit: 5,
-					orderBy: (entries, { desc }) => [desc(entries.completionDate)],
-				},
-			},
-		});
-
 		// Query tags with their habits
 		const tagsWithHabits = await db.query.tags.findMany({
 			with: {

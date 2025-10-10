@@ -54,7 +54,7 @@ export async function createTestHabit(
 	const defaultData = {
 		name: `Test Habit ${Date.now()}`,
 		description: "A test habit",
-		frequency: "daily",
+		frequency: "daily" as const,
 		targetCount: 1,
 		...habitData,
 	};
