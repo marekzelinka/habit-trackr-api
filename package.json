@@ -3,7 +3,6 @@
 	"type": "module",
 	"scripts": {
 		"dev": "node --watch src/index.ts",
-		"build": "tsc",
 		"start": "node src/index.ts",
 		"test": "vitest run",
 		"test:watch": "vitest",
@@ -16,7 +15,7 @@
 		"format": "biome format --write",
 		"lint": "biome lint --write",
 		"check": "biome check --write",
-		"typecheck": "tsc --noEmit"
+		"typecheck": "tsc"
 	},
 	"packageManager": "pnpm@10.18.2",
 	"devDependencies": {
