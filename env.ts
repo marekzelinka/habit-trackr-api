@@ -9,7 +9,6 @@ const isProduction = process.env.APP_STAGE === "production";
 const isDevelopment = process.env.APP_STAGE === "dev";
 const isTest = process.env.APP_STAGE === "test";
 
-// Load .env file
 if (isDevelopment) {
 	loadEnv();
 } else if (isTest) {
@@ -64,7 +63,6 @@ export const env = createEnv({
 	runtimeEnv: process.env,
 });
 
-// Helper functions for environment checks
 export const isProdEnv = () => env.NODE_ENV === "production";
 export const isDevEnv = () => env.NODE_ENV === "development";
 export const isTestEnv = () => env.NODE_ENV === "test";
