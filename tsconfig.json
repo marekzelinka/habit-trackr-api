@@ -2,28 +2,31 @@
 	// Visit https://aka.ms/tsconfig to read more about this file
 	"compilerOptions": {
 		// File Layout
-		"noEmit": true,
+		"outDir": "./dist",
 
 		// Environment Settings
 		// See also https://aka.ms/tsconfig/module
 		"module": "nodenext",
 		"target": "esnext",
-		"rewriteRelativeImportExtensions": true,
-		"allowImportingTsExtensions": true,
-		"lib": ["esnext"],
 		"types": ["node"],
-
-		// Stricter Typechecking Options
-		// "noUncheckedIndexedAccess": true,
-		"exactOptionalPropertyTypes": true,
-		"erasableSyntaxOnly": true,
+		"lib": ["esnext"],
+		"allowImportingTsExtensions": true, // Import .ts files directly
+		"rewriteRelativeImportExtensions": true, // Convert .ts imports to .js in output
+		"erasableSyntaxOnly": true, // Warns on unsupported TS features (like enums, namespaces, etc.)
+		"forceConsistentCasingInFileNames": true,
 
 		// Style Options
+		// "noUncheckedIndexedAccess": true,
 		"noImplicitReturns": true,
 		"noImplicitOverride": true,
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
 		"noFallthroughCasesInSwitch": true,
+		"noPropertyAccessFromIndexSignature": true,
+		"noImplicitAny": true,
+		"strictNullChecks": true,
+		"strictPropertyInitialization": true,
+		"exactOptionalPropertyTypes": true,
 
 		// Recommended Options
 		"strict": true,

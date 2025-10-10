@@ -1,8 +1,8 @@
-import { db } from "../../src/db/connection.ts";
-import * as schema from "../../src/db/schema.ts";
-import { hashPassword } from "../../src/utils/password.ts";
+import { db } from "../src/db/connection.ts";
+import * as schema from "../src/db/schema.ts";
+import { hashPassword } from "../src/utils/password.ts";
 
-export async function seed() {
+export async function seedDatabase() {
 	console.log("🌱 Starting database seed…");
 
 	try {
@@ -346,7 +346,7 @@ export async function seed() {
 // Run seed if this file is executed directly
 if (import.meta.main) {
 	try {
-		await seed();
+		await seedDatabase();
 
 		process.exit(0);
 	} catch (error) {

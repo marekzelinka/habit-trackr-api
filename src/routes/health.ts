@@ -10,7 +10,7 @@ healthRouter.get("/", (_req, res) => {
 		data: {
 			status: "OK",
 			timestamp: new Date().toISOString(),
-			service: "Habit Trackr API",
+			service: "Habit Tracker API",
 		},
 	});
 });

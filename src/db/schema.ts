@@ -8,64 +8,61 @@ import {
 } from "drizzle-zod";
 
 export const users = table("users", {
-	id: t.uuid("id").primaryKey().defaultRandom(),
-	email: t.varchar("email", { length: 255 }).notNull().unique(),
-	username: t.varchar("username", { length: 50 }).notNull().unique(),
-	// TODO: move password to its own table
-	password: t.varchar("password", { length: 255 }).notNull(),
-	firstName: t.varchar("first_name", { length: 50 }),
-	lastName: t.varchar("last_name", { length: 50 }),
-	createdAt: t.timestamp("created_at").defaultNow().notNull(),
-	updatedAt: t.timestamp("updated_at").defaultNow().notNull(),
+	id: t.uuid().primaryKey().defaultRandom(),
+	email: t.varchar({ length: 255 }).notNull().unique(),
+	username: t.varchar({ length: 50 }).notNull().unique(),
+	password: t.varchar({ length: 255 }).notNull(),
+	firstName: t.varchar({ length: 50 }),
+	lastName: t.varchar({ length: 50 }),
+	createdAt: t.timestamp().defaultNow().notNull(),
+	updatedAt: t.timestamp().defaultNow().notNull(),
 });
 
 export const habits = table("habits", {
-	id: t.uuid("id").primaryKey().defaultRandom(),
+	id: t.uuid().primaryKey().defaultRandom(),
 	userId: t
-		.uuid("user_id")
+		.uuid()
 		.references(() => users.id, { onDelete: "cascade" })
 		.notNull(),
-	name: t.varchar("name", { length: 100 }).notNull(),
-	description: t.text("description"),
-	// Can be daily, weekly, monthly
-	frequency: t.varchar("frequency", { length: 20 }).notNull(),
-	// How many times per frequency period
-	targetCount: t.integer("target_count").default(1),
-	isActive: t.boolean("is_active").default(true).notNull(),
-	createdAt: t.timestamp("created_at").defaultNow().notNull(),
-	updatedAt: t.timestamp("updated_at").defaultNow().notNull(),
+	name: t.varchar({ length: 100 }).notNull(),
+	description: t.text(),
+	frequency: t.varchar({ enum: ["daily", "weekly", "monthly"] }).notNull(),
+	targetCount: t.integer().default(1),
+	isActive: t.boolean().default(true).notNull(),
+	createdAt: t.timestamp().defaultNow().notNull(),
+	updatedAt: t.timestamp().defaultNow().notNull(),
 });
 
 export const entries = table("entries", {
-	id: t.uuid("id").primaryKey().defaultRandom(),
+	id: t.uuid().primaryKey().defaultRandom(),
 	habitId: t
-		.uuid("habit_id")
+		.uuid()
 		.references(() => habits.id, { onDelete: "cascade" })
 		.notNull(),
-	completionDate: t.timestamp("completion_date").defaultNow().notNull(),
-	note: t.text("note"),
-	createdAt: t.timestamp("created_at").defaultNow().notNull(),
+	completionDate: t.timestamp().defaultNow().notNull(),
+	note: t.text(),
+	createdAt: t.timestamp().defaultNow().notNull(),
 });
 
 export const tags = table("tags", {
-	id: t.uuid("id").primaryKey().defaultRandom(),
-	name: t.varchar("name", { length: 50 }).notNull().unique(),
-	color: t.varchar("color", { length: 7 }).default("#6B7280"), // hex color
-	createdAt: t.timestamp("created_at").defaultNow().notNull(),
-	updatedAt: t.timestamp("updated_at").defaultNow().notNull(),
+	id: t.uuid().primaryKey().defaultRandom(),
+	name: t.varchar({ length: 50 }).notNull().unique(),
+	color: t.varchar({ length: 7 }).default("#6B7280"),
+	createdAt: t.timestamp().defaultNow().notNull(),
+	updatedAt: t.timestamp().defaultNow().notNull(),
 });
 
 export const habitTags = table("habit_tags", {
-	id: t.uuid("id").primaryKey().defaultRandom(),
+	id: t.uuid().primaryKey().defaultRandom(),
 	habitId: t
-		.uuid("habit_id")
+		.uuid()
 		.references(() => habits.id, { onDelete: "cascade" })
 		.notNull(),
 	tagId: t
-		.uuid("tag_id")
+		.uuid()
 		.references(() => tags.id, { onDelete: "cascade" })
 		.notNull(),
-	createdAt: t.timestamp("created_at").defaultNow().notNull(),
+	createdAt: t.timestamp().defaultNow().notNull(),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
