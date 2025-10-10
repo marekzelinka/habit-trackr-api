@@ -2,9 +2,9 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"start": "node src/index.ts",
 		"dev": "node --watch src/index.ts",
 		"build": "tsc",
+		"start": "node src/index.ts",
 		"test": "vitest run",
 		"test:watch": "vitest",
 		"test:coverage": "vitest run --coverage",
@@ -34,6 +34,7 @@
 	},
 	"dependencies": {
 		"@epic-web/remember": "^1.1.0",
+		"@t3-oss/env-core": "^0.13.8",
 		"bcrypt": "^6.0.0",
 		"cors": "^2.8.5",
 		"custom-env": "^2.0.6",
