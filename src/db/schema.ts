@@ -18,6 +18,10 @@ export const users = table("users", {
 	updatedAt: t.timestamp().defaultNow().notNull(),
 });
 
+export const usersRelations = relations(users, ({ many }) => ({
+	habits: many(habits),
+}));
+
 export const habits = table("habits", {
 	id: t.uuid().primaryKey().defaultRandom(),
 	userId: t
@@ -33,6 +37,15 @@ export const habits = table("habits", {
 	updatedAt: t.timestamp().defaultNow().notNull(),
 });
 
+export const habitsRelations = relations(habits, ({ one, many }) => ({
+	user: one(users, {
+		fields: [habits.userId],
+		references: [users.id],
+	}),
+	entries: many(entries),
+	habitTags: many(habitTags),
+}));
+
 export const entries = table("entries", {
 	id: t.uuid().primaryKey().defaultRandom(),
 	habitId: t
@@ -44,6 +57,13 @@ export const entries = table("entries", {
 	createdAt: t.timestamp().defaultNow().notNull(),
 });
 
+export const entriesRelations = relations(entries, ({ one }) => ({
+	habit: one(habits, {
+		fields: [entries.habitId],
+		references: [habits.id],
+	}),
+}));
+
 export const tags = table("tags", {
 	id: t.uuid().primaryKey().defaultRandom(),
 	name: t.varchar({ length: 50 }).notNull().unique(),
@@ -51,6 +71,10 @@ export const tags = table("tags", {
 	createdAt: t.timestamp().defaultNow().notNull(),
 	updatedAt: t.timestamp().defaultNow().notNull(),
 });
+
+export const tagsRelations = relations(tags, ({ many }) => ({
+	habitTags: many(habitTags),
+}));
 
 export const habitTags = table("habit_tags", {
 	id: t.uuid().primaryKey().defaultRandom(),
@@ -64,30 +88,6 @@ export const habitTags = table("habit_tags", {
 		.notNull(),
 	createdAt: t.timestamp().defaultNow().notNull(),
 });
-
-export const usersRelations = relations(users, ({ many }) => ({
-	habits: many(habits),
-}));
-
-export const habitsRelations = relations(habits, ({ one, many }) => ({
-	user: one(users, {
-		fields: [habits.userId],
-		references: [users.id],
-	}),
-	entries: many(entries),
-	habitTags: many(habitTags),
-}));
-
-export const entriesRelations = relations(entries, ({ one }) => ({
-	habit: one(habits, {
-		fields: [entries.habitId],
-		references: [habits.id],
-	}),
-}));
-
-export const tagsRelations = relations(tags, ({ many }) => ({
-	habitTags: many(habitTags),
-}));
 
 export const habitTagsRelations = relations(habitTags, ({ one }) => ({
 	habit: one(habits, {

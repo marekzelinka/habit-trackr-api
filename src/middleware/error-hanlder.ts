@@ -1,46 +1,38 @@
-import type { ErrorRequestHandler, RequestHandler } from "express";
-import { env } from "../../env.ts";
+import type { ErrorHandler, NotFoundHandler } from "hono";
+import { HTTPException } from "hono/http-exception";
+import { isProdEnv } from "../../env.ts";
+import type { ErrorResponse } from "../types.ts";
 
-export interface CustomError extends Error {
-	status?: number;
-	code?: string;
-}
-
-export const errorHandler: ErrorRequestHandler = (
-	err: CustomError,
-	_req,
-	res,
-	_next,
-) => {
-	console.error(err.stack);
-
-	// Default error
-	let status = err.status || 500;
-	let message = err.message || "Internal Server Error";
-
-	// Handle specific error types
-	if (err.name === "ValidationError") {
-		status = 400;
-		message = "Validation Error";
-	}
-
-	if (err.name === "UnauthorizedError") {
-		status = 401;
-		message = "Unauthorized";
-	}
-
-	res.status(status).json({
-		error: message,
-		...(env.APP_STAGE === "dev" && {
-			stack: err.stack,
-			details: err.message,
-		}),
-	});
+export const notFoundHandler: NotFoundHandler = (c) => {
+	return c.json<ErrorResponse>(
+		{
+			success: false,
+			error: "Not Found",
+		},
+		404,
+	);
 };
 
-export const notFound: RequestHandler = (req, _res, next) => {
-	const error = new Error(`Not found - ${req.originalUrl}`) as CustomError;
-	error.status = 404;
+export const errorHandler: ErrorHandler = (err, c) => {
+	if (err instanceof HTTPException) {
+		const errResponse =
+			err.res ??
+			c.json<ErrorResponse>(
+				{
+					success: false,
+					error: err.message,
+				},
+				err.status,
+			);
 
-	next(error);
+		return errResponse;
+	}
+
+	return c.json<ErrorResponse>(
+		{
+			success: false,
+			error: isProdEnv() ? "Internal Server Error" : (err.stack ?? err.message),
+		},
+		500,
+	);
 };

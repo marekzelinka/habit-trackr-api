@@ -3,9 +3,9 @@ POST http://localhost:3000/api/auth/register
 Content-Type: application/json
 
 {
-  "email": "michael@remix.com",
-  "username": "michaelcdodds",
-  "password": "michaeliscool"
+  "email": "marek@remix.com",
+  "username": "marekzelinka",
+  "password": "marekiscool"
 }
 
 ### Login with password
@@ -13,6 +13,6 @@ POST http://localhost:3000/api/auth/login
 Content-Type: application/json
 
 {
-  "email": "demo@habittracker.com",
-  "password": "demo123"
+  "email": "marek@remix.com",
+  "password": "marekiscool"
 }

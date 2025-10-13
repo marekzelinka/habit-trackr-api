@@ -1,10 +1,11 @@
 import { createSecretKey } from "node:crypto";
 import {
-	type JWTPayload as _JWTPayload,
-	decodeJwt,
-	jwtVerify,
-	SignJWT,
-} from "jose";
+	decode as decodeJWT,
+	sign as signJWT,
+	verify as verifyJWT,
+} from "hono/jwt";
+import type { JWTPayload as _JWTPayload } from "hono/utils/jwt/types";
+import { decodeJwt, jwtVerify, SignJWT } from "jose";
 import { env } from "../../env.ts";
 
 export interface JWTPayload extends _JWTPayload {
@@ -14,19 +15,24 @@ export interface JWTPayload extends _JWTPayload {
 }
 
 export async function generateToken(payload: JWTPayload): Promise<string> {
-	const secretKey = createSecretKey(env.JWT_SECRET, "utf-8");
+	const secretKey = env.JWT_SECRET;
 
-	return new SignJWT(payload)
-		.setProtectedHeader({ alg: "HS256" })
-		.setIssuedAt()
-		.setExpirationTime(env.JWT_EXPIRES_IN)
-		.sign(secretKey);
+	const signAlgorithm = "HS256";
+	return signJWT(
+		{
+			...payload,
+			// Token expires in x minutes
+			exp: Math.floor(Date.now() / 1000) + 60 * env.JWT_EXPIRES_IN,
+		},
+		secretKey,
+		signAlgorithm,
+	);
 }
 
 export async function verifyToken(token: string): Promise<JWTPayload> {
-	const secretKey = createSecretKey(env.JWT_SECRET, "utf-8");
+	const secretKey = env.JWT_SECRET;
 
-	const { payload } = await jwtVerify<JWTPayload>(token, secretKey);
+	const payload = (await verifyJWT(token, secretKey)) as JWTPayload;
 
 	return {
 		id: payload.id,
@@ -37,7 +43,7 @@ export async function verifyToken(token: string): Promise<JWTPayload> {
 
 export function decodeToken(token: string): JWTPayload | null {
 	try {
-		const payload = decodeJwt<JWTPayload>(token);
+		const payload = decodeJWT(token).payload as JWTPayload;
 
 		return {
 			id: payload.id,
